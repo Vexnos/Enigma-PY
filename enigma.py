@@ -38,12 +38,35 @@ class Rotor:
         self.wiring = self.wiring[1:] + self.wiring[0]
 
     def forward(self, letter: str) -> str:
+        """Pass a letter through the rotor in the forward direction.
+
+        Finds the index position of the inputted letter on the alphabet, then returns the letter which is on the same index on the rotor wiring.
+
+        Args:
+            letter (str): The inputted letter to pass through the rotor.
+
+        Returns:
+            str: The resulting letter.
+        """
         index: int = ord(letter) - ord('A')
         return self.wiring[index]
 
     def backward(self, letter: str) -> str:
+        """Pass a letter through the rotor in the inverse direction.
+
+        Finds the index position of the inputted letter on the rotor, then returns the letter which is on the same index on the alphabet.
+
+        Args:
+            letter (str): The inputted letter to pass through the rotor.
+
+        Returns:
+            str: The resulting letter.
+        """
         index: int = self.wiring.index(letter)
         return chr(ord('A') + index)
+    
+    def get_wiring(self) -> str:
+        return self.wiring
 
 class Reflector(Rotor):
     def __init__(self, wiring: str) -> None:
@@ -66,6 +89,7 @@ A = Reflector('EJMZALYXVBWFCRQUONTSPIKHGD')
 B = Reflector('YRUHQSLDPXNGOKMIEBFZCWVJAT')
 C = Reflector('FVPJIAOYEDRZXWGCTKUQSBNMHL')
 
-# II.rotate()
-print(II.forward('A'))
-print(II.backward('A'))
+# I.rotate()
+print(I.get_wiring())
+print(I.forward('A'))
+print(I.backward('E'))
