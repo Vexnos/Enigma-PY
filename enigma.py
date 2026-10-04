@@ -27,6 +27,15 @@ C: FVPJIAOYEDRZXWGCTKUQSBNMHL
 
 #-------Classes|Methods-------
 class Rotor:
+    """A rotor which can and encrypt letters in the same manner as the Enigma Machine
+
+    This class manages the rotor portion of the Enigma Machine, it will pass letters through and encrypt them according to a rotor's wiring.
+    It also manages turning the rotors, its ring-settings and window-settings.
+
+    Attributes:
+        wiring (str): The wiring of the rotor.
+        notch (str): The turnover notch position of the rotor.
+    """
     wiring: str
     notch: str
 
@@ -35,6 +44,7 @@ class Rotor:
         self.notch = notch
 
     def rotate(self) -> None:
+        """ Rotates the rotor wiring by taking the first string and moving it to the end of the wiring. """
         self.wiring = self.wiring[1:] + self.wiring[0]
 
     def forward(self, letter: str) -> str:
@@ -69,10 +79,19 @@ class Rotor:
         return self.wiring
 
 class Reflector(Rotor):
+    """A reflector which reflects letters back into the rotors on the Enigma Machine.
+
+    This subclass extends the Rotor class to be used as a reflector since the logic is very similar.
+    The turnover notch is not necessary for the reflector to work.
+
+    Attributes:
+        wiring (str): The wiring of the reflector.
+    """
     def __init__(self, wiring: str) -> None:
         self.wiring = wiring
 
     def reflect(self, letter: str) -> str:
+        """ Since reflect is the same logic as moving forward through a rotor, we can just re-use the method. """
         return super().forward(letter)
 
 #-------Functions-------
