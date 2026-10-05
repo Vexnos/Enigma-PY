@@ -23,16 +23,33 @@ class Rotor:
         notch (str): The turnover notch position of the rotor.
     """
     wiring: str
-    notch: str
+    notch: int
+    position: int
+    ring_setting: int
 
-    def __init__(self, wiring: str, notch: str) -> None:
+    def __init__(self, wiring: str, notch: str, position: int = 0, ring_setting: int = 0) -> None:
         self.wiring = wiring
-        self.notch = notch
+        self.notch = ord(notch) - ord('A')
+        self.position = position
+        self.ring_setting = ring_setting
 
     def rotate(self, n: int = 1) -> None:
-        """ Rotates the rotor wiring by taking the first string and moving it to the end of the wiring. """
-        for _ in range(n):
-            self.wiring = self.wiring[1:] + self.wiring[0]
+        """Rotate the rotor 
+        
+        Get the current rotor position, add the amount of times rotate and get the modulo of that from 26.
+        This ensures the rotor can never turn higher than 26 because there are only 26 characters.
+        
+        Args:
+            n (int): Amount of times to rotate
+
+        Returns:
+            None
+        """
+        self.position = (self.position + n) % 26 # Remainder of 26 to ensure the rotor loops around
+
+    def set_ring_setting(self, ring_setting: int) -> None:
+        """ Set the ring position for settings ONLY """
+        self.ring_setting = ring_setting % 26 # Remainder of 26 to ensure the rotor loops around
 
     def forward(self, letter: str) -> str:
         """Pass a letter through the rotor in the forward direction.
@@ -46,6 +63,7 @@ class Rotor:
             str: The resulting letter.
         """
         index: int = ord(letter) - ord('A')
+        index = (index - self.position) % 26
         return self.wiring[index]
 
     def backward(self, letter: str) -> str:
@@ -61,15 +79,9 @@ class Rotor:
         """
         index: int = self.wiring.index(letter)
         return chr(ord('A') + index)
-    
-    def get_wiring(self) -> str:
-        return self.wiring
 
-class Reflector(Rotor):
+class Reflector:
     """A reflector which reflects letters back into the rotors on the Enigma Machine.
-
-    This subclass extends the Rotor class to be used as a reflector since the logic is very similar.
-    The turnover notch is not necessary for the reflector to work.
 
     Attributes:
         wiring (str): The wiring of the reflector.
@@ -78,5 +90,5 @@ class Reflector(Rotor):
         self.wiring = wiring
 
     def reflect(self, letter: str) -> str:
-        """ Since reflect is the same logic as moving forward through a rotor, we can just re-use the method. """
-        return super().forward(letter)
+        index: int = ord(letter) - ord('A')
+        return self.wiring[index]
