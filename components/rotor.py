@@ -59,7 +59,7 @@ class Rotor:
 
     def __init__(self, wiring: str, notch: str, position: int = 0, ring_setting: int = 0) -> None:
         self.wiring = wiring
-        self.notch = (Rotor.to_index(notch) - ring_setting) % 26 # Index, calculate the notch position based on the Ring Setting and take the modulo of 26.
+        self.notch = Rotor.to_index(notch)
         self.position = position
         self.ring_setting = ring_setting
 
