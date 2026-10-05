@@ -51,35 +51,39 @@ class Rotor:
         """ Set the ring position for settings ONLY """
         self.ring_setting = ring_setting % 26 # Remainder of 26 to ensure the rotor loops around
 
-    def forward(self, letter: str) -> str:
+    def move(self, letter: str, backwards: bool = False) -> str:
         """Pass a letter through the rotor in the forward direction.
 
-        Finds the index position of the inputted letter on the alphabet, then returns the letter which is on the same index on the rotor wiring.
+        Finds the index position of the inputted letter in the alphabet, then finds the letter in that same indexed position on the rotor wheel's wiring (also accounting for the rotor's rotation).
+
+        Then the index position of that letter is found relative to the alphabet (again accounting for the rotor's rotation). 
+        
+        Finally, the letter on the alphabet which corresponds to that index is returned.
 
         Args:
             letter (str): The inputted letter to pass through the rotor.
+            backwards (bool): Defaults to False. If True, backwards motion will happen instead of forwards.
 
         Returns:
             str: The resulting letter.
         """
+        # Find index of inputted letter and add the position of the rotor
         index: int = ord(letter) - ord('A')
-        index = (index - self.position) % 26
-        return self.wiring[index]
+        index = (index + self.position) % 26
 
-    def backward(self, letter: str) -> str:
-        """Pass a letter through the rotor in the inverse direction.
+        if backwards:
+            wired_index: int = self.wiring.index(chr(ord('A') + index))
+            wired_index = (wired_index - self.position) % 26
 
-        Finds the index position of the inputted letter on the rotor, then returns the letter which is on the same index on the alphabet.
+            return chr(ord('A') + wired_index)
+        else:
+            # Find encrypted letter on rotor coordinates and convert to machine coordinates
+            wired_index: int = ord(self.wiring[index]) - ord('A')
+            wired_index = (wired_index - self.position) % 26
 
-        Args:
-            letter (str): The inputted letter to pass through the rotor.
-
-        Returns:
-            str: The resulting letter.
-        """
-        index: int = self.wiring.index(letter)
-        return chr(ord('A') + index)
-
+            # Convert index to letter and return
+            return chr(wired_index + ord('A'))
+        
 class Reflector:
     """A reflector which reflects letters back into the rotors on the Enigma Machine.
 
