@@ -27,9 +27,23 @@ from components import *
 
 #-------Classes|Methods-------
 class EnigmaMachine:
+    """The Enigma Machine, able to encrypt messages by passing letters through a plugboard and rotors.
+
+    This is the main class of this project. It works by taking in the user's inputted attributes and encrypting their message accordingly.
+    It also works with three other imported classes: Rotor, Reflector, and Plugboard.
+
+    Attributes:
+        message (str): The message to encrypt/decrypt
+        rotors (list[Rotor]): The rotors to use (maximum of 3). It should be noted that the first rotor in the order is actually the last one in the list of rotors. While this may appear confusing, it's to maintain parity with other Enigma simulators and keep the visualisation simple.
+        reflector (Reflector): The reflector to be used.
+        window_settings (str): The initial position of the rotors.
+        ring_settings (str): The ring settings of each rotor.
+        plugboard_swaps (str): Letters to swap around during encryption.
+    """
     message: str
     rotors: list[Rotor]
     relfector: Reflector
+    plugboard_swaps: Plugboard
 
     def __init__(self, message: str, rotors: list[Rotor], reflector: Reflector, window_settings: str, ring_settings: str, plugboard_swaps: str = '') -> None:
         self.message = message.upper().strip().replace(' ', '') # Remove whitespaces and set to uppercase.
@@ -53,13 +67,28 @@ class EnigmaMachine:
         self.rotors[2].set_ring_setting(Rotor.to_index(ring_settings[2]) % 26)
 
     def run(self) -> None:
+        """Run the enigma machine.
+
+        Encrypts the message by iterating over each char in the message.
+        """
         encrypted_message: list[str] = []
         for char in self.message:
             encrypted_message.append(self.encrypt(char))
         result: str = ''.join(encrypted_message)
-        print(' '.join(result[i : i + 5] for i in range(0, len(result), 5)))
+        print(' '.join(result[i : i + 5] for i in range(0, len(result), 5))) # Add a whitespace every 5 characters.
 
     def encrypt(self, char: str) -> str:
+        """Encrypt a char from a message
+
+        Takes the char and feeds it through a series of methods like the Enigma machine.
+        unecrypted char -> plugboard -> rotor 1 (forwards) -> rotor 2 (forwards) -> rotor 3 (forwards) -> reflector -> rotor 3 (backwards) -> rotor 2 (backwards) -> rotor 1 (backwards) -> plugboard -> encrypted char
+
+        Args:
+            char (str): The char to encrypt
+
+        Returns:
+            str: The encrypted char
+        """
         self.rotate_rotors()
         char = self.plugboard_swaps.swap(char)
         char = self.right_rotor.move(char)
@@ -73,18 +102,21 @@ class EnigmaMachine:
         return char
 
     def rotate_rotors(self) -> None:
+        """Rotor rotation
+
+        Rotates the right rotor each keypress. The middle rotor will rotate if the right rotor is at its notch, but also if the middle rotor is at its notch due to the double step anomaly which is implemented here. The left rotor will also rotate if the middle rotor is at its notch.
+        """
         if self.middle_rotor.get_position() == self.middle_rotor.get_notch():
             self.left_rotor.rotate()
             self.middle_rotor.rotate() # Double stepping anomaly
-            print('Rotating left rotor...')
         if self.right_rotor.get_position() == self.right_rotor.get_notch():
-            print('Rotating middle rotor...')
             self.middle_rotor.rotate()
         self.right_rotor.rotate()
-        print('Rotating right rotor...')
 
 #-------Functions-------
 def main() -> None:
+    """ Main function """
+    # Initialize rotors and reflectors
     I = Rotor('EKMFLGDQVZNTOWYHXUSPAIBRCJ', 'Q')
     II = Rotor('AJDKSIRUXBLHWTMCQGZNPYFVOE', 'E')
     III = Rotor('BDFHJLCPRTXVZNYEIWGAKMUSQO', 'V')
@@ -95,8 +127,10 @@ def main() -> None:
     B = Reflector('YRUHQSLDPXNGOKMIEBFZCWVJAT')
     C = Reflector('FVPJIAOYEDRZXWGCTKUQSBNMHL')
 
+    # Message
     message: str = input('Please enter your message: ')
 
+    # Settings
     enigma = EnigmaMachine(message, [III, II, I], B, 'AAA', 'AAA', '')
     enigma.run()
 
