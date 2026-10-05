@@ -57,9 +57,9 @@ class Rotor:
 
     def __init__(self, wiring: str, notch: str, position: int = 0, ring_setting: int = 0) -> None:
         self.wiring = wiring
-        self.notch = ord(notch) - ord('A')
+        self.notch = Rotor.to_index(notch)
         self.position = position
-        self.ring_setting = ring_setting
+        self.ring_setting = ring_setting + 1 # Add one to stop indexing from 0
 
     def rotate(self, n: int = 1) -> None:
         """Rotate the rotor 
@@ -97,12 +97,12 @@ class Rotor:
         """
         # Find index of inputted letter and add the position of the rotor
         index: int = Rotor.to_index(letter)
-        index = (index + self.position) % 26
+        index = (index + self.position - self.ring_setting) % 26
 
         if backwards:
             wired_letter: str = Rotor.to_letter(index)
             wired_index: int = self.wiring.index(wired_letter)
-            wired_index = (wired_index - self.position) % 26
+            wired_index = (wired_index - self.position + self.ring_setting) % 26
 
             # Convert index to a letter and return
             return Rotor.to_letter(wired_index)
@@ -110,7 +110,7 @@ class Rotor:
             # Find encrypted letter on rotor coordinates and convert to machine coordinates
             wired_letter: str = self.wiring[index]
             wired_index: int = Rotor.to_index(wired_letter)
-            wired_index = (wired_index - self.position) % 26
+            wired_index = (wired_index - self.position + self.ring_setting) % 26
 
             # Convert index to a letter and return
             return Rotor.to_letter(wired_index)
