@@ -31,7 +31,7 @@ class EnigmaMachine:
     rotors: list[Rotor]
     relfector: Reflector
 
-    def __init__(self, message: str, rotors: list[Rotor], reflector: Reflector, window_settings: str = 'AAA', ring_settings: str = 'AAA', plugboard_swaps: str = '') -> None:
+    def __init__(self, message: str, rotors: list[Rotor], reflector: Reflector, window_settings: str, ring_settings: str, plugboard_swaps: str = '') -> None:
         self.message = message.upper().strip().replace(' ', '') # Remove whitespaces and set to uppercase.
         self.rotors = rotors
         self.reflector = reflector
