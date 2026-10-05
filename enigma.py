@@ -34,7 +34,7 @@ class EnigmaMachine:
     ring_settings: str
 
     def __init__(self, message: str, rotors: list[Rotor], reflector: Reflector, window_settings: str = 'AAA', ring_settings: str = 'AAA') -> None:
-        self.message = message.strip().upper() # Remove whitespaces and set to uppercase.
+        self.message = message.upper().strip().replace(' ', '') # Remove whitespaces and set to uppercase.
         self.rotors = rotors
         self.reflector = reflector
         self.window_settings = window_settings
@@ -75,6 +75,7 @@ class EnigmaMachine:
     def rotate_rotors(self) -> None:
         if self.middle_rotor.get_position() == self.middle_rotor.get_notch():
             self.left_rotor.rotate()
+            self.middle_rotor.rotate() # Double stepping anomaly
             print('Rotating left rotor...')
         if self.right_rotor.get_position() == self.right_rotor.get_notch():
             print('Rotating middle rotor...')
@@ -94,7 +95,9 @@ def main() -> None:
     B = Reflector('YRUHQSLDPXNGOKMIEBFZCWVJAT')
     C = Reflector('FVPJIAOYEDRZXWGCTKUQSBNMHL')
 
-    enigma = EnigmaMachine('A', [III, II, I], B)
+    message: str = input('Please enter your message: ')
+
+    enigma = EnigmaMachine(message, [III, II, I], B, 'AAA', 'AAA')
     enigma.run()
 
 #-------Main-Routine-------
