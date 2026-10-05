@@ -27,6 +27,30 @@ class Rotor:
     position: int
     ring_setting: int
 
+    @staticmethod
+    def to_letter(index: int) -> str:
+        """Convert an index number to a corresponding letter in the alphabet.
+
+        Args:
+            index (int): The index of the letter.
+         
+        Returns:
+            str: The corresponding letter.
+        """
+        return chr(ord('A') + index)
+
+    @staticmethod
+    def to_index(letter: str) -> int:
+        """Convert a letter to a corresponding index number from the alphabet.
+
+        Args:
+            letter (str): The letter.
+
+        Returns:
+            int: The corresponding index.
+        """
+        return ord(letter) - ord('A')
+
     def __init__(self, wiring: str, notch: str, position: int = 0, ring_setting: int = 0) -> None:
         self.wiring = wiring
         self.notch = ord(notch) - ord('A')
@@ -68,21 +92,23 @@ class Rotor:
             str: The resulting letter.
         """
         # Find index of inputted letter and add the position of the rotor
-        index: int = ord(letter) - ord('A')
+        index: int = Rotor.to_index(letter)
         index = (index + self.position) % 26
 
         if backwards:
-            wired_index: int = self.wiring.index(chr(ord('A') + index))
+            wired_letter: str = Rotor.to_letter(index)
+            wired_index: int = self.wiring.index(wired_letter)
             wired_index = (wired_index - self.position) % 26
 
-            return chr(ord('A') + wired_index)
+            return Rotor.to_letter(wired_index)
         else:
             # Find encrypted letter on rotor coordinates and convert to machine coordinates
-            wired_index: int = ord(self.wiring[index]) - ord('A')
+            wired_letter: str = self.wiring[index]
+            wired_index: int = Rotor.to_index(wired_letter)
             wired_index = (wired_index - self.position) % 26
 
-            # Convert index to letter and return
-            return chr(wired_index + ord('A'))
+            # Convert index to a letter and return
+            return Rotor.to_letter(wired_index)
         
 class Reflector:
     """A reflector which reflects letters back into the rotors on the Enigma Machine.
