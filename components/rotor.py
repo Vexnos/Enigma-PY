@@ -20,7 +20,9 @@ class Rotor:
 
     Attributes:
         wiring (str): The wiring of the rotor.
-        notch (str): The turnover notch position of the rotor.
+        notch (int): The turnover notch position of the rotor.
+        positing (int): The position of the rotor.
+        ring_setting (int): The ring seting of the rotor.
     """
     wiring: str
     notch: int
@@ -57,9 +59,9 @@ class Rotor:
 
     def __init__(self, wiring: str, notch: str, position: int = 0, ring_setting: int = 0) -> None:
         self.wiring = wiring
-        self.notch = Rotor.to_index(notch)
+        self.notch = (Rotor.to_index(notch) - ring_setting) % 26 # Index, calculate the notch position based on the Ring Setting and take the modulo of 26.
         self.position = position
-        self.ring_setting = ring_setting + 1 # Add one to stop indexing from 0
+        self.ring_setting = ring_setting
 
     def rotate(self, n: int = 1) -> None:
         """Rotate the rotor 
@@ -114,7 +116,15 @@ class Rotor:
 
             # Convert index to a letter and return
             return Rotor.to_letter(wired_index)
-        
+
+    def get_position(self) -> int:
+        """ Return the position of the rotor """
+        return self.position
+
+    def get_notch(self) -> int:
+        """ Return the notch position """
+        return self.notch
+    
 class Reflector:
     """A reflector which reflects letters back into the rotors on the Enigma Machine.
 
