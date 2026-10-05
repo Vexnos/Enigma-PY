@@ -82,11 +82,11 @@ class Rotor:
         self.ring_setting = ring_setting % 26 # Remainder of 26 to ensure the rotor loops around
 
     def move(self, letter: str, backwards: bool = False) -> str:
-        """Pass a letter through the rotor in the forward direction.
+        """Pass a letter through the rotor.
 
         Finds the index position of the inputted letter in the alphabet, then finds the letter in that same indexed position on the rotor wheel's wiring (also accounting for the rotor's rotation).
 
-        Then the index position of that letter is found relative to the alphabet (again accounting for the rotor's rotation). 
+        However, that letter is relative to the rotor's internal coordinates (internal wiring), so we return to the machine's coordinates (or wiring) by getting the index of that letter relative to the alphabet and accounting for the rotor's position.
         
         Finally, the letter on the alphabet which corresponds to that index is returned.
 
