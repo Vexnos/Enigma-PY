@@ -56,7 +56,8 @@ class EnigmaMachine:
         encrypted_message: list[str] = []
         for char in self.message:
             encrypted_message.append(self.encrypt(char))
-        print(''.join(encrypted_message))
+        result: str = ''.join(encrypted_message)
+        print(' '.join(result[i : i + 5] for i in range(0, len(result), 5)))
 
     def encrypt(self, char: str) -> str:
         self.rotate_rotors()
