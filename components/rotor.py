@@ -31,6 +31,8 @@ class Rotor:
     def to_letter(index: int) -> str:
         """Convert an index number to a corresponding letter in the alphabet.
 
+        This works by adding the Ordinal of 'A' which is 65 plus the index of the letter, then converting that ordinal number into a readable character.
+
         Args:
             index (int): The index of the letter.
          
@@ -42,6 +44,8 @@ class Rotor:
     @staticmethod
     def to_index(letter: str) -> int:
         """Convert a letter to a corresponding index number from the alphabet.
+
+        This works by subtracting the Ordinal of the inputted letter from the ordinal of 'A' which is 65 and that gives us the position of that letter in the alphabet.
 
         Args:
             letter (str): The letter.
@@ -100,6 +104,7 @@ class Rotor:
             wired_index: int = self.wiring.index(wired_letter)
             wired_index = (wired_index - self.position) % 26
 
+            # Convert index to a letter and return
             return Rotor.to_letter(wired_index)
         else:
             # Find encrypted letter on rotor coordinates and convert to machine coordinates
