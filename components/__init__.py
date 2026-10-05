@@ -10,5 +10,6 @@ project: Initialize Enigma Components
 """
 #-------Libraries-------
 from .rotor import Rotor, Reflector
+from .plugboard import Plugboard
 
-__all__ = ['Rotor', 'Reflector']
+__all__ = ['Rotor', 'Reflector', 'Plugboard']

@@ -30,15 +30,12 @@ class EnigmaMachine:
     message: str
     rotors: list[Rotor]
     relfector: Reflector
-    window_settings: str
-    ring_settings: str
 
-    def __init__(self, message: str, rotors: list[Rotor], reflector: Reflector, window_settings: str = 'AAA', ring_settings: str = 'AAA') -> None:
+    def __init__(self, message: str, rotors: list[Rotor], reflector: Reflector, window_settings: str = 'AAA', ring_settings: str = 'AAA', plugboard_swaps: str = '') -> None:
         self.message = message.upper().strip().replace(' ', '') # Remove whitespaces and set to uppercase.
         self.rotors = rotors
         self.reflector = reflector
-        self.window_settings = window_settings
-        self.ring_settings = ring_settings
+        self.plugboard_swaps = Plugboard(plugboard_swaps)
 
         # Individual Rotors
         self.right_rotor: Rotor = self.rotors[2] # First rotor
@@ -63,6 +60,7 @@ class EnigmaMachine:
 
     def encrypt(self, char: str) -> str:
         self.rotate_rotors()
+        char = self.plugboard_swaps.swap(char)
         char = self.right_rotor.move(char)
         char = self.middle_rotor.move(char)
         char = self.left_rotor.move(char)
@@ -70,6 +68,7 @@ class EnigmaMachine:
         char = self.left_rotor.move(char, backwards=True)
         char = self.middle_rotor.move(char, backwards=True)
         char = self.right_rotor.move(char, backwards=True)
+        char = self.plugboard_swaps.swap(char)
         return char
 
     def rotate_rotors(self) -> None:
@@ -97,7 +96,7 @@ def main() -> None:
 
     message: str = input('Please enter your message: ')
 
-    enigma = EnigmaMachine(message, [III, II, I], B, 'AAA', 'AAA')
+    enigma = EnigmaMachine(message, [III, II, I], B, 'AAA', 'AAA', '')
     enigma.run()
 
 #-------Main-Routine-------
