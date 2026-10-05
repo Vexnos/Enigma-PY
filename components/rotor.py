@@ -102,20 +102,19 @@ class Rotor:
         index = (index + self.position - self.ring_setting) % 26
 
         if backwards:
+            # Find encrypted letter on rotor coordinates (Inverse Wiring)
             wired_letter: str = Rotor.to_letter(index)
             wired_index: int = self.wiring.index(wired_letter)
-            wired_index = (wired_index - self.position + self.ring_setting) % 26
-
-            # Convert index to a letter and return
-            return Rotor.to_letter(wired_index)
         else:
-            # Find encrypted letter on rotor coordinates and convert to machine coordinates
+            # Find encrypted letter on rotor coordinates (Forward Wiring)
             wired_letter: str = self.wiring[index]
             wired_index: int = Rotor.to_index(wired_letter)
-            wired_index = (wired_index - self.position + self.ring_setting) % 26
 
-            # Convert index to a letter and return
-            return Rotor.to_letter(wired_index)
+        # Convert to machine coordinates
+        wired_index = (wired_index - self.position + self.ring_setting) % 26
+
+        # Convert index to a letter and return
+        return Rotor.to_letter(wired_index)
 
     def get_position(self) -> int:
         """ Return the position of the rotor """
