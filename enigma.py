@@ -249,11 +249,13 @@ class EnigmaMachine:
 
 #-------Functions-------
 def import_message(file_path: str) -> dict[str, str]:
+    """ Import a message from a JSON file """
     with open(f'messages/{file_path}.json', 'r') as file:
         contents: dict[str, str] = json.load(file)
     return contents
 
 def validate_key(key: str) -> None:
+    """ Validate the message decryption key """
     key = key.upper().strip()
     if not str.isalpha(key):
         raise ValueError(f'Argument {key} must only contain alphabetical characters.')
@@ -286,12 +288,12 @@ def main(json_mode: bool = False) -> None:
     enigma = EnigmaMachine(rotors, reflector, window_setting, ring_setting, plugboard_swaps)
 
     if json_mode:
-        enigma.set_window_setting(key[0:3])
-        key_print: str = enigma.run(key[3:6])
-        enigma.set_window_setting(key[3:6])
-        print(f'{key[0:3]}\n{key_print}')
+        enigma.set_window_setting(key[0:3]) # Window setting to first half of key
+        key_print: str = enigma.run(key[3:6]) # Run the second half of the key through Enigma
+        enigma.set_window_setting(key[3:6]) # Rotate to the raw second half of key
+        print(f'{key[0:3]}\n{key_print}') # Print the keys
 
-    print(enigma.run(message))
+    print(enigma.run(message)) # Run the message through
 
 #-------Main-Routine-------
 if __name__ == '__main__':
