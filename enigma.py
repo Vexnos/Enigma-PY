@@ -34,22 +34,19 @@ class EnigmaMachine:
     It also works with three other imported classes: Rotor, Reflector, and Plugboard.
 
     Attributes:
-        message (str): The message to encrypt/decrypt
         rotors (list[Rotor]): The rotors to use (maximum of 3). It should be noted that the first rotor in the order is actually the last one in the list of rotors. While this may appear confusing, it's to maintain parity with other Enigma simulators and keep the visualisation simple.
         reflector (Reflector): The reflector to be used.
         window_settings (str): The initial position of the rotors.
         ring_settings (str): The ring settings of each rotor.
         plugboard_swaps (str): Letters to swap around during encryption.
     """
-    message: str
     rotors: list[Rotor]
     reflector: Reflector
     window_settings: str
     ring_settings: str
     plugboard_swaps: Plugboard
 
-    def __init__(self, message: str, rotors: str, reflector: str, window_settings: str, ring_settings: str, plugboard_swaps: str = '') -> None:
-        self.set_message(message) # Remove whitespaces and set to uppercase.
+    def __init__(self, rotors: str, reflector: str, window_settings: str, ring_settings: str, plugboard_swaps: str = '') -> None:
         self.set_rotors(rotors)
         self.set_reflector(reflector)
         self.set_window_setting(window_settings)
@@ -76,8 +73,10 @@ class EnigmaMachine:
 
         Encrypts the message by iterating over each char in the message.
         """
+        message: str = input('Your Message: ')
+        message = self.validate_message(message)
         encrypted_message: list[str] = []
-        for char in self.message:
+        for char in message:
             encrypted_message.append(self.encrypt(char))
         result: str = ''.join(encrypted_message)
         print(' '.join(result[i : i + 5] for i in range(0, len(result), 5))) # Add a whitespace every 5 characters.
@@ -118,8 +117,9 @@ class EnigmaMachine:
             self.middle_rotor.rotate()
         self.right_rotor.rotate()
 
-    def set_message(self, message: str) -> None:
-        """Set the message 
+    @staticmethod
+    def validate_message(message: str) -> str:
+        """Validate the message 
         
         Args:
             message (str): The message to encrypt.
@@ -133,7 +133,7 @@ class EnigmaMachine:
         message = message.upper().strip().replace(' ', '')
         if not str.isalpha(message):
             raise ValueError(f'Argument {message} must only contain alphabetical characters.')
-        self.message = message
+        return message
 
     def set_rotors(self, rotors: str) -> None:
         """Select rotor configuration
@@ -255,12 +255,7 @@ def import_message(file_path: str) -> None:
 
 def main() -> None:
     """ Main function """
-
-    # Message
-    message: str = input('Please enter your message: ')
-
-    # Settings
-    enigma = EnigmaMachine(message, 'III II I', 'B', 'AAA', 'AAA', '')
+    enigma = EnigmaMachine('III II I', 'B', 'AAA', 'AAA', '')
     enigma.run()
 
 #-------Main-Routine-------
