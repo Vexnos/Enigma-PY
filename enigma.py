@@ -49,10 +49,10 @@ class EnigmaMachine:
 
     def __init__(self, message: str, rotors: list[Rotor], reflector: Reflector, window_settings: str, ring_settings: str, plugboard_swaps: str = '') -> None:
         self.set_message(message) # Remove whitespaces and set to uppercase.
-        self.rotors = rotors
+        self.set_rotors(rotors)
         self.reflector = reflector
         self.set_window_setting(window_settings)
-        self.ring_settings = ring_settings
+        self.set_ring_setting(ring_settings)
         self.plugboard_swaps = Plugboard(plugboard_swaps)
 
         # Individual Rotors
@@ -118,14 +118,56 @@ class EnigmaMachine:
         self.right_rotor.rotate()
 
     def set_message(self, message: str) -> None:
-        """ Set the message """
+        """Set the message 
+        
+        Args:
+            message (str): The message to encrypt.
+        
+        Returns:
+            None
+
+        Raises:
+            ValueError: If message doesn't only contain alphabetical characters.
+        """
         if not str.isalpha(message):
             raise ValueError(f'Argument {message} must only contain alphabetical characters.')
         self.message = message.upper().strip().replace(' ', '')
 
+    def set_rotors(self, rotors: list[Rotor]) -> None:
+        """Select rotor configuration
+
+        Set the rotor config if only 3 are selected, otherwise fail.
+
+        Args:
+            rotors (list[Rotor]): The rotors selected
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: If there are not 3 selected rotors.
+        """
+        if len(rotors) != 3:
+            raise ValueError('You must have 3 rotors specified only.')
+        self.rotors = rotors
+
     def set_window_setting(self, setting: str) -> None:
         """ Set the window setting """
-        self.window_settings = setting
+        if not str.isalpha(setting):
+            raise ValueError(f'Argument {setting} must only contain alphabetical characters.')
+        elif len(setting) != 3:
+            raise ValueError(f'Argument {setting} must be a length of 3 characters.')
+        else:
+            self.window_settings = setting
+
+    def set_ring_setting(self, setting: str) -> None:
+        """ Set the ring setting """
+        if not str.isalpha(setting):
+            raise ValueError(f'Argument {setting} must only contain alphabetical characters.')
+        elif len(setting) != 3:
+            raise ValueError(f'Argument {setting} must be a length of 3 characters.')
+        else:
+            self.ring_settings = setting
 
 #-------Functions-------
 def main() -> None:
