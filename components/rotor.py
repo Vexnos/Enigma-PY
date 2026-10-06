@@ -77,6 +77,10 @@ class Rotor:
         """
         self.position = (self.position + n) % 26 # Remainder of 26 to ensure the rotor loops around
 
+    def set_window_setting(self, window_setting: int) -> None:
+        """ Set the window position for settings ONLY """
+        self.position = window_setting
+
     def set_ring_setting(self, ring_setting: int) -> None:
         """ Set the ring position for settings ONLY """
         self.ring_setting = ring_setting % 26 # Remainder of 26 to ensure the rotor loops around

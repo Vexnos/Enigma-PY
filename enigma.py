@@ -58,28 +58,22 @@ class EnigmaMachine:
         self.middle_rotor: Rotor = self.rotors[1]
         self.left_rotor: Rotor = self.rotors[0]
 
-        # Window settings
-        self.rotors[0].rotate(Rotor.to_index(self.window_settings[0]) % 26)
-        self.rotors[1].rotate(Rotor.to_index(self.window_settings[1]) % 26)
-        self.rotors[2].rotate(Rotor.to_index(self.window_settings[2]) % 26)
-
         # Ring settings
         self.rotors[0].set_ring_setting(Rotor.to_index(self.ring_settings[0]) % 26)
         self.rotors[1].set_ring_setting(Rotor.to_index(self.ring_settings[1]) % 26)
         self.rotors[2].set_ring_setting(Rotor.to_index(self.ring_settings[2]) % 26)
 
-    def run(self) -> None:
+    def run(self, message: str) -> str:
         """Run the enigma machine.
 
         Encrypts the message by iterating over each char in the message.
         """
-        message: str = input('Your Message: ')
         message = self.validate_message(message)
         encrypted_message: list[str] = []
         for char in message:
             encrypted_message.append(self.encrypt(char))
         result: str = ''.join(encrypted_message)
-        print(' '.join(result[i : i + 5] for i in range(0, len(result), 5))) # Add a whitespace every 5 characters.
+        return ' '.join(result[i : i + 5] for i in range(0, len(result), 5)) # Add a whitespace every 5 characters.
 
     def encrypt(self, char: str) -> str:
         """Encrypt a char from a message
@@ -226,6 +220,11 @@ class EnigmaMachine:
         else:
             self.window_settings = setting
 
+            # Window settings
+            self.rotors[0].set_window_setting(Rotor.to_index(self.window_settings[0]) % 26)
+            self.rotors[1].set_window_setting(Rotor.to_index(self.window_settings[1]) % 26)
+            self.rotors[2].set_window_setting(Rotor.to_index(self.window_settings[2]) % 26)
+
     def set_ring_setting(self, setting: str) -> None:
         """Set the ring setting
         
@@ -249,15 +248,51 @@ class EnigmaMachine:
             self.ring_settings = setting
 
 #-------Functions-------
-def import_message(file_path: str) -> None:
-    with open(f'messages/{file_path}', 'r') as file:
+def import_message(file_path: str) -> dict[str, str]:
+    with open(f'messages/{file_path}.json', 'r') as file:
         contents: dict[str, str] = json.load(file)
+    return contents
 
-def main() -> None:
+def validate_key(key: str) -> None:
+    key = key.upper().strip()
+    if not str.isalpha(key):
+        raise ValueError(f'Argument {key} must only contain alphabetical characters.')
+    if len(key) != 6:
+        raise ValueError(f'Argument {key} must contain 6 characters.')
+
+def main(json_mode: bool = False) -> None:
     """ Main function """
-    enigma = EnigmaMachine('III II I', 'B', 'AAA', 'AAA', '')
-    enigma.run()
+    if not json_mode:
+        # Settings
+        rotors: str = 'I II III'
+        reflector: str = 'B'
+        window_setting: str = 'AAA'
+        ring_setting: str = 'AAA'
+        plugboard_swaps: str = ''
+
+        message = input('Your Message: ')
+    else:
+        message_info = import_message('template')
+        validate_key(message_info['key'])
+
+        message: str = message_info['message']
+        key: str = message_info['key']
+        rotors: str = message_info['rotors']
+        reflector: str = message_info['reflector']
+        window_setting: str = message_info['window_setting']
+        ring_setting: str = message_info['ring_setting']
+        plugboard_swaps: str = message_info['plugboard_swaps']
+
+    enigma = EnigmaMachine(rotors, reflector, window_setting, ring_setting, plugboard_swaps)
+
+    if json_mode:
+        enigma.set_window_setting(key[0:3])
+        key_print: str = enigma.run(key[3:6])
+        enigma.set_window_setting(key[3:6])
+        print(f'{key[0:3]}\n{key_print}')
+
+    print(enigma.run(message))
 
 #-------Main-Routine-------
 if __name__ == '__main__':
-    main()
+    main(True)
