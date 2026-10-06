@@ -43,12 +43,16 @@ class EnigmaMachine:
     message: str
     rotors: list[Rotor]
     relfector: Reflector
+    window_settings: str
+    ring_settings: str
     plugboard_swaps: Plugboard
 
     def __init__(self, message: str, rotors: list[Rotor], reflector: Reflector, window_settings: str, ring_settings: str, plugboard_swaps: str = '') -> None:
-        self.message = message.upper().strip().replace(' ', '') # Remove whitespaces and set to uppercase.
+        self.set_message(message) # Remove whitespaces and set to uppercase.
         self.rotors = rotors
         self.reflector = reflector
+        self.set_window_setting(window_settings)
+        self.ring_settings = ring_settings
         self.plugboard_swaps = Plugboard(plugboard_swaps)
 
         # Individual Rotors
@@ -57,14 +61,14 @@ class EnigmaMachine:
         self.left_rotor: Rotor = self.rotors[0]
 
         # Window settings
-        self.rotors[0].rotate(Rotor.to_index(window_settings[0]) % 26)
-        self.rotors[1].rotate(Rotor.to_index(window_settings[1]) % 26)
-        self.rotors[2].rotate(Rotor.to_index(window_settings[2]) % 26)
+        self.rotors[0].rotate(Rotor.to_index(self.window_settings[0]) % 26)
+        self.rotors[1].rotate(Rotor.to_index(self.window_settings[1]) % 26)
+        self.rotors[2].rotate(Rotor.to_index(self.window_settings[2]) % 26)
 
         # Ring settings
-        self.rotors[0].set_ring_setting(Rotor.to_index(ring_settings[0]) % 26)
-        self.rotors[1].set_ring_setting(Rotor.to_index(ring_settings[1]) % 26)
-        self.rotors[2].set_ring_setting(Rotor.to_index(ring_settings[2]) % 26)
+        self.rotors[0].set_ring_setting(Rotor.to_index(self.ring_settings[0]) % 26)
+        self.rotors[1].set_ring_setting(Rotor.to_index(self.ring_settings[1]) % 26)
+        self.rotors[2].set_ring_setting(Rotor.to_index(self.ring_settings[2]) % 26)
 
     def run(self) -> None:
         """Run the enigma machine.
@@ -112,6 +116,14 @@ class EnigmaMachine:
         if self.right_rotor.get_position() == self.right_rotor.get_notch():
             self.middle_rotor.rotate()
         self.right_rotor.rotate()
+
+    def set_message(self, message: str) -> None:
+        """ Set the message """
+        self.message = message.upper().strip().replace(' ', '')
+
+    def set_window_setting(self, setting: str) -> None:
+        """ Set the window setting """
+        self.window_settings = setting
 
 #-------Functions-------
 def main() -> None:
