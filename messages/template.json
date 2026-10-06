@@ -1,0 +1,10 @@
+{
+    "key": "BERLIN",
+    "rotors": "III II I",
+    "reflector": "B",
+    "window_setting": "AAA",
+    "ring_setting": "AAA",
+    "plugboard_swaps": "",
+    "message": "This is a test message",
+    "encrypted_message": ""
+}

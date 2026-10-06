@@ -24,6 +24,7 @@ C: FVPJIAOYEDRZXWGCTKUQSBNMHL
 """
 #-------Libraries-------
 from components import *
+import json
 
 #-------Classes|Methods-------
 class EnigmaMachine:
@@ -42,15 +43,15 @@ class EnigmaMachine:
     """
     message: str
     rotors: list[Rotor]
-    relfector: Reflector
+    reflector: Reflector
     window_settings: str
     ring_settings: str
     plugboard_swaps: Plugboard
 
-    def __init__(self, message: str, rotors: list[Rotor], reflector: Reflector, window_settings: str, ring_settings: str, plugboard_swaps: str = '') -> None:
+    def __init__(self, message: str, rotors: str, reflector: str, window_settings: str, ring_settings: str, plugboard_swaps: str = '') -> None:
         self.set_message(message) # Remove whitespaces and set to uppercase.
         self.set_rotors(rotors)
-        self.reflector = reflector
+        self.set_reflector(reflector)
         self.set_window_setting(window_settings)
         self.set_ring_setting(ring_settings)
         self.plugboard_swaps = Plugboard(plugboard_swaps)
@@ -134,7 +135,7 @@ class EnigmaMachine:
             raise ValueError(f'Argument {message} must only contain alphabetical characters.')
         self.message = message
 
-    def set_rotors(self, rotors: list[Rotor]) -> None:
+    def set_rotors(self, rotors: str) -> None:
         """Select rotor configuration
 
         Set the rotor config if only 3 are selected, otherwise fail.
@@ -148,9 +149,43 @@ class EnigmaMachine:
         Raises:
             ValueError: If there are not 3 selected rotors.
         """
-        if len(rotors) != 3:
+        available_rotors: dict[str, Rotor] = {
+            'I': Rotor('EKMFLGDQVZNTOWYHXUSPAIBRCJ', 'Q'),
+            'II': Rotor('AJDKSIRUXBLHWTMCQGZNPYFVOE', 'E'),
+            'III': Rotor('BDFHJLCPRTXVZNYEIWGAKMUSQO', 'V'),
+            'IV': Rotor('ESOVPZJAYQUIRHXLNFTGKDCMWB', 'J'),
+            'V': Rotor('VZBRGITYUPSDNHLXAWMJQOFECK', 'Z')
+        }
+
+        rotors_list: list[str] = rotors.split()
+        final_rotors: list[Rotor] = []
+
+        for rotor in rotors_list:
+            if rotor not in available_rotors:
+                raise ValueError(f'Invalid rotor: {rotor} selected. Please try again')
+
+            final_rotors.append(available_rotors[rotor])
+            
+        if len(final_rotors) != 3:
             raise ValueError('You must have 3 rotors specified only.')
-        self.rotors = rotors
+        
+        self.rotors = final_rotors
+
+    def set_reflector(self, reflector: str) -> None:
+        """ Set the reflector """
+        available_reflectors: dict[str, Reflector] = {
+            'A': Reflector('EJMZALYXVBWFCRQUONTSPIKHGD'),
+            'B': Reflector('YRUHQSLDPXNGOKMIEBFZCWVJAT'),
+            'C': Reflector('FVPJIAOYEDRZXWGCTKUQSBNMHL')
+        }
+
+        if len(reflector) != 1:
+            raise ValueError(f'Argument {reflector} must be one character.')
+
+        if reflector.upper() not in available_reflectors:
+            raise ValueError(f'Argument {reflector} was not found in the list of available reflectors. Choose A, B, or C')
+
+        self.reflector = available_reflectors[reflector]
 
     def set_window_setting(self, setting: str) -> None:
         """ Set the window setting """
@@ -171,24 +206,18 @@ class EnigmaMachine:
             self.ring_settings = setting
 
 #-------Functions-------
+def import_message(file_path: str) -> None:
+    with open(f'messages/{file_path}', 'r') as file:
+        contents: dict[str, str] = json.load(file)
+
 def main() -> None:
     """ Main function """
-    # Initialize rotors and reflectors
-    I = Rotor('EKMFLGDQVZNTOWYHXUSPAIBRCJ', 'Q')
-    II = Rotor('AJDKSIRUXBLHWTMCQGZNPYFVOE', 'E')
-    III = Rotor('BDFHJLCPRTXVZNYEIWGAKMUSQO', 'V')
-    IV = Rotor('ESOVPZJAYQUIRHXLNFTGKDCMWB', 'J')
-    V = Rotor('VZBRGITYUPSDNHLXAWMJQOFECK', 'Z')
-
-    A = Reflector('EJMZALYXVBWFCRQUONTSPIKHGD')
-    B = Reflector('YRUHQSLDPXNGOKMIEBFZCWVJAT')
-    C = Reflector('FVPJIAOYEDRZXWGCTKUQSBNMHL')
 
     # Message
     message: str = input('Please enter your message: ')
 
     # Settings
-    enigma = EnigmaMachine(message, [III, II, I], B, 'AAA', 'AAA', '')
+    enigma = EnigmaMachine(message, 'III II I', 'B', 'AAA', 'AAA', '')
     enigma.run()
 
 #-------Main-Routine-------
