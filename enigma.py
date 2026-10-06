@@ -119,6 +119,8 @@ class EnigmaMachine:
 
     def set_message(self, message: str) -> None:
         """ Set the message """
+        if not str.isalpha(message):
+            raise ValueError(f'Argument {message} must only contain alphabetical characters.')
         self.message = message.upper().strip().replace(' ', '')
 
     def set_window_setting(self, setting: str) -> None:
