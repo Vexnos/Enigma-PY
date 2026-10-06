@@ -160,6 +160,9 @@ class EnigmaMachine:
         rotors_list: list[str] = rotors.split()
         final_rotors: list[Rotor] = []
 
+        if len(rotors_list) != len(set(rotors_list)):
+            raise ValueError(f'There is a duplicate rotor selected. Please only select a rotor once.')
+
         for rotor in rotors_list:
             if rotor not in available_rotors:
                 raise ValueError(f'Invalid rotor: {rotor} selected. Please try again')
