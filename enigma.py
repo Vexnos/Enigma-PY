@@ -295,4 +295,4 @@ def main(json_mode: bool = False) -> None:
 
 #-------Main-Routine-------
 if __name__ == '__main__':
-    main(True)
+    main()
