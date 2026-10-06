@@ -138,7 +138,7 @@ class EnigmaMachine:
     def set_rotors(self, rotors: str) -> None:
         """Select rotor configuration
 
-        Set the rotor config if only 3 are selected, otherwise fail.
+        Set the rotor config and check they are all exist, are unique and there's three selected.
 
         Args:
             rotors (list[Rotor]): The rotors selected
@@ -147,7 +147,7 @@ class EnigmaMachine:
             None
 
         Raises:
-            ValueError: If there are not 3 selected rotors.
+            ValueError: If there are not 3 selected rotors; if a selected rotor doesn't exist; or if a rotor duplicate is selected.
         """
         available_rotors: dict[str, Rotor] = {
             'I': Rotor('EKMFLGDQVZNTOWYHXUSPAIBRCJ', 'Q'),
@@ -158,53 +158,93 @@ class EnigmaMachine:
         }
 
         rotors_list: list[str] = rotors.split()
-        final_rotors: list[Rotor] = []
+        final_rotors: list[Rotor] = [] # Make a new list to append Rotor objects to
 
-        if len(rotors_list) != len(set(rotors_list)):
+        if len(rotors_list) != len(set(rotors_list)): # Check all rotors are unique
             raise ValueError(f'There is a duplicate rotor selected. Please only select a rotor once.')
 
         for rotor in rotors_list:
-            if rotor not in available_rotors:
+            if rotor not in available_rotors: # Validate selected rotor exists and translate to rotor object
                 raise ValueError(f'Invalid rotor: {rotor} selected. Please try again')
 
             final_rotors.append(available_rotors[rotor])
             
-        if len(final_rotors) != 3:
+        if len(final_rotors) != 3: # Check there are three rotors
             raise ValueError('You must have 3 rotors specified only.')
         
         self.rotors = final_rotors
 
     def set_reflector(self, reflector: str) -> None:
-        """ Set the reflector """
+        """Set the reflector
+
+        Set the reflector unless there is no reflector selected; or the reflector doesn't exist.
+
+        Args:
+            reflector (str): The reflector as a string
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: If the reflector string is empty or the character is invalid.
+        """
         available_reflectors: dict[str, Reflector] = {
             'A': Reflector('EJMZALYXVBWFCRQUONTSPIKHGD'),
             'B': Reflector('YRUHQSLDPXNGOKMIEBFZCWVJAT'),
             'C': Reflector('FVPJIAOYEDRZXWGCTKUQSBNMHL')
         }
 
-        if len(reflector) != 1:
-            raise ValueError(f'Argument {reflector} must be one character.')
+        reflector = reflector.upper()
 
-        if reflector.upper() not in available_reflectors:
-            raise ValueError(f'Argument {reflector} was not found in the list of available reflectors. Choose A, B, or C')
+        if len(reflector) != 1:
+            raise ValueError(f'Argument {reflector} must be one character.') # A character was not given, either a whitespace or a number.
+
+        if reflector not in available_reflectors: 
+            raise ValueError(f'Argument {reflector} was not found in the list of available reflectors. Choose A, B, or C') # Given reflector doesn't exist
 
         self.reflector = available_reflectors[reflector]
 
     def set_window_setting(self, setting: str) -> None:
-        """ Set the window setting """
+        """Set the window setting
+
+        Validate the inputted window settings. Return a ValueError if invalid.
+        
+        Args:
+            setting (str): The given settings for each rotor
+        
+        Returns:
+            None
+
+        Raises:
+            ValueError: If there are not three settings present for each rotor; or the input did not contain alphabetical characters
+        """
+        setting = setting.upper().replace(' ','').strip()
         if not str.isalpha(setting):
-            raise ValueError(f'Argument {setting} must only contain alphabetical characters.')
+            raise ValueError(f'Argument {setting} must only contain alphabetical characters.') # Invalid character (was not found in the alphabet)
         elif len(setting) != 3:
-            raise ValueError(f'Argument {setting} must be a length of 3 characters.')
+            raise ValueError(f'Argument {setting} must be a length of 3 characters.') # Three characters are required, one for each rotor
         else:
             self.window_settings = setting
 
     def set_ring_setting(self, setting: str) -> None:
-        """ Set the ring setting """
+        """Set the ring setting
+        
+        Validate the inputted ring settings. Return a ValueError if invalid.
+        
+        Args:
+            setting (str): The given settings for each rotor
+        
+        Returns:
+            None
+
+        Raises:
+            ValueError: If there are not three settings present for each rotor; or the input did not contain alphabetical characters
+        """
+        setting = setting.upper().replace(' ','').strip()
         if not str.isalpha(setting):
-            raise ValueError(f'Argument {setting} must only contain alphabetical characters.')
+            raise ValueError(f'Argument {setting} must only contain alphabetical characters.') # Invalid character (was not found in the alphabet)
         elif len(setting) != 3:
-            raise ValueError(f'Argument {setting} must be a length of 3 characters.')
+            raise ValueError(f'Argument {setting} must be a length of 3 characters.') # Three characters are required, one for each rotor
         else:
             self.ring_settings = setting
 
