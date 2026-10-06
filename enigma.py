@@ -129,9 +129,10 @@ class EnigmaMachine:
         Raises:
             ValueError: If message doesn't only contain alphabetical characters.
         """
+        message = message.upper().strip().replace(' ', '')
         if not str.isalpha(message):
             raise ValueError(f'Argument {message} must only contain alphabetical characters.')
-        self.message = message.upper().strip().replace(' ', '')
+        self.message = message
 
     def set_rotors(self, rotors: list[Rotor]) -> None:
         """Select rotor configuration

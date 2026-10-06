@@ -22,8 +22,17 @@ class Plugboard:
     """
     plugboard_swaps: list[str]
 
+    @staticmethod
+    def has_no_duplicates(swaps: str) -> bool:
+        swaps = swaps.replace(' ', '')
+        return len(swaps) == len(set(swaps))
+
     def __init__(self, plugboard_swaps: str) -> None:
-        self.plugboard_swaps = plugboard_swaps.upper().split()
+        if Plugboard.has_no_duplicates(plugboard_swaps):
+            self.plugboard_swaps = plugboard_swaps.upper().split()
+            self.only_two_chars()
+        else:
+            raise ValueError(f'Attribute {plugboard_swaps} cannot contain duplicates.')
 
     def swap(self, char: str) -> str:
         """Swap the char if it matches a swap pair.
@@ -48,3 +57,8 @@ class Plugboard:
             return swap[1] if pos == 0 else swap[0]
         else: # A pair wasn't found, return the original char
             return char
+
+    def only_two_chars(self) -> None:
+        for swap in self.plugboard_swaps:
+            if len(swap) != 2:
+                raise ValueError(f'Attribute {self.plugboard_swaps} can only contain two characters for a swap.')
