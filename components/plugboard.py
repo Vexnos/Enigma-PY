@@ -24,6 +24,7 @@ class Plugboard:
 
     @staticmethod
     def has_no_duplicates(swaps: str) -> bool:
+        """ Check there are no duplicate letters in the defined swaps """
         swaps = swaps.replace(' ', '')
         return len(swaps) == len(set(swaps))
 
@@ -59,6 +60,7 @@ class Plugboard:
             return char
 
     def only_two_chars(self) -> None:
+        """ Check if each plugboard swap has only two characters """
         for swap in self.plugboard_swaps:
             if len(swap) != 2:
                 raise ValueError(f'Attribute {self.plugboard_swaps} can only contain two characters for a swap.')
