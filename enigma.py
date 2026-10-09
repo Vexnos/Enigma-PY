@@ -111,23 +111,17 @@ class EnigmaMachine:
             self.middle_rotor.rotate()
         self.right_rotor.rotate()
 
-    @staticmethod
-    def validate_message(message: str) -> str:
+    def validate_message(self, message: str) -> str:
         """Validate the message 
         
         Args:
             message (str): The message to encrypt.
         
         Returns:
-            None
-
-        Raises:
-            ValueError: If message doesn't only contain alphabetical characters.
+            str: The validated message
         """
         message = message.upper().strip().replace(' ', '')
-        if not str.isalpha(message):
-            raise ValueError(f'Argument {message} must only contain alphabetical characters.')
-        return message
+        return ''.join([char for char in message if char.isalpha()])
 
     def set_rotors(self, rotors: str) -> None:
         """Select rotor configuration
