@@ -74,6 +74,9 @@ class Plugboard:
         else: # A pair wasn't found, return the original char
             return char
 
+    # --------------------------------------------------------------------
+    # Only two characters in a swap
+    # --------------------------------------------------------------------
     def only_two_chars(self) -> None:
         """ Check if each plugboard swap has only two characters """
         for swap in self.plugboard_swaps:
