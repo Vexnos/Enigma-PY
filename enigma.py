@@ -345,9 +345,14 @@ class EnigmaMachine:
         """
         setting = setting.upper().replace(' ','').strip()
         if not setting.isalpha():
-            raise ValueError(f'Argument {setting} must only contain alphabetical characters.') # Invalid character (was not found in the alphabet)
+            raise ValueError(
+                f'Argument {setting} must only contain alphabetical'
+                ' characters.'
+            ) # Invalid character (was not found in the alphabet)
         elif len(setting) != 3:
-            raise ValueError(f'Argument {setting} must be a length of 3 characters.') # Three characters are required, one for each rotor
+            raise ValueError(
+                f'Argument {setting} must be a length of 3 characters.'
+            ) # Three characters are required, one for each rotor
         else:
             self.ring_settings = setting
 
