@@ -207,7 +207,7 @@ class EnigmaMachine:
             ValueError: If there are not three settings present for each rotor; or the input did not contain alphabetical characters
         """
         setting = setting.upper().replace(' ','').strip()
-        if not str.isalpha(setting):
+        if not setting.isalpha():
             raise ValueError(f'Argument {setting} must only contain alphabetical characters.') # Invalid character (was not found in the alphabet)
         elif len(setting) != 3:
             raise ValueError(f'Argument {setting} must be a length of 3 characters.') # Three characters are required, one for each rotor
@@ -234,7 +234,7 @@ class EnigmaMachine:
             ValueError: If there are not three settings present for each rotor; or the input did not contain alphabetical characters
         """
         setting = setting.upper().replace(' ','').strip()
-        if not str.isalpha(setting):
+        if not setting.isalpha():
             raise ValueError(f'Argument {setting} must only contain alphabetical characters.') # Invalid character (was not found in the alphabet)
         elif len(setting) != 3:
             raise ValueError(f'Argument {setting} must be a length of 3 characters.') # Three characters are required, one for each rotor
@@ -251,7 +251,7 @@ def import_message(file_path: str) -> dict[str, str]:
 def validate_key(key: str) -> None:
     """ Validate the message decryption key """
     key = key.upper().strip()
-    if not str.isalpha(key):
+    if not key.isalpha():
         raise ValueError(f'Argument {key} must only contain alphabetical characters.')
     if len(key) != 6:
         raise ValueError(f'Argument {key} must contain 6 characters.')
