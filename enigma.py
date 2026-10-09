@@ -22,19 +22,33 @@ C: FVPJIAOYEDRZXWGCTKUQSBNMHL
 ====================================
 
 """
-#-------Libraries-------
+# ------------------------------------------------------------------------
+# Libraries
+# ------------------------------------------------------------------------
+
 from components import *
 import json
 
-#-------Classes|Methods-------
+# ------------------------------------------------------------------------
+# Enigma Machine
+# ------------------------------------------------------------------------
 class EnigmaMachine:
-    """The Enigma Machine, able to encrypt messages by passing letters through a plugboard and rotors.
+    """The Enigma Machine, able to encrypt messages by passing letters 
+    through a plugboard and rotors.
 
-    This is the main class of this project. It works by taking in the user's inputted attributes and encrypting their message accordingly.
-    It also works with three other imported classes: Rotor, Reflector, and Plugboard.
+    This is the main class of this project. 
+    It works by taking in the user's inputted attributes and encrypting 
+    their message accordingly.
+    It also works with three other imported classes: Rotor, Reflector, 
+    and Plugboard.
+
+    It should be noted that the first rotor in the order is actually 
+    the last one in the list of rotors. 
+    While this may appear confusing, it's to maintain parity with other 
+    Enigma simulators and keep the visualisation simple.
 
     Attributes:
-        rotors (list[Rotor]): The rotors to use (maximum of 3). It should be noted that the first rotor in the order is actually the last one in the list of rotors. While this may appear confusing, it's to maintain parity with other Enigma simulators and keep the visualisation simple.
+        rotors (list[Rotor]): The rotors to use (maximum of 3). 
         reflector (Reflector): The reflector to be used.
         window_settings (str): The initial position of the rotors.
         ring_settings (str): The ring settings of each rotor.
@@ -46,7 +60,14 @@ class EnigmaMachine:
     ring_settings: str
     plugboard_swaps: Plugboard
 
-    def __init__(self, rotors: str, reflector: str, window_settings: str, ring_settings: str, plugboard_swaps: str = '') -> None:
+    def __init__(
+        self, 
+        rotors: str, 
+        reflector: str, 
+        window_settings: str, 
+        ring_settings: str, 
+        plugboard_swaps: str = ''
+    ) -> None:
         self.set_rotors(rotors)
         self.set_reflector(reflector)
         self.set_window_setting(window_settings)
@@ -59,10 +80,19 @@ class EnigmaMachine:
         self.left_rotor: Rotor = self.rotors[0]
 
         # Ring settings
-        self.rotors[0].set_ring_setting(Rotor.to_index(self.ring_settings[0]) % 26)
-        self.rotors[1].set_ring_setting(Rotor.to_index(self.ring_settings[1]) % 26)
-        self.rotors[2].set_ring_setting(Rotor.to_index(self.ring_settings[2]) % 26)
+        self.rotors[0].set_ring_setting(
+            Rotor.to_index(self.ring_settings[0]) % 26
+        )
+        self.rotors[1].set_ring_setting(
+            Rotor.to_index(self.ring_settings[1]) % 26
+        )
+        self.rotors[2].set_ring_setting(
+            Rotor.to_index(self.ring_settings[2]) % 26
+        )
 
+    # --------------------------------------------------------------------
+    # Run the Enigma
+    # --------------------------------------------------------------------
     def run(self, message: str) -> str:
         """Run the enigma machine.
 
@@ -73,13 +103,24 @@ class EnigmaMachine:
         for char in message:
             encrypted_message.append(self.encrypt(char))
         result: str = ''.join(encrypted_message)
-        return ' '.join(result[i : i + 5] for i in range(0, len(result), 5)) # Add a whitespace every 5 characters.
 
+        # Add a whitespace every 5 characters.
+        return ' '.join(result[i : i + 5] for i in range(0, len(result), 5))
+
+    # --------------------------------------------------------------------
+    # Encrypt for each Char
+    # --------------------------------------------------------------------
     def encrypt(self, char: str) -> str:
         """Encrypt a char from a message
 
-        Takes the char and feeds it through a series of methods like the Enigma machine.
-        unecrypted char -> plugboard -> rotor 1 (forwards) -> rotor 2 (forwards) -> rotor 3 (forwards) -> reflector -> rotor 3 (backwards) -> rotor 2 (backwards) -> rotor 1 (backwards) -> plugboard -> encrypted char
+        Takes the char and feeds it through a series of methods like the 
+        Enigma machine.
+
+        Process: 
+        unecrypted char -> plugboard -> rotor 1 (forwards) -> 
+        rotor 2 (forwards) -> rotor 3 (forwards) -> reflector -> 
+        rotor 3 (backwards) -> rotor 2 (backwards) -> rotor 1 (backwards) 
+        -> plugboard -> encrypted char
 
         Args:
             char (str): The char to encrypt
@@ -99,18 +140,37 @@ class EnigmaMachine:
         char = self.plugboard_swaps.swap(char)
         return char
 
+    # --------------------------------------------------------------------
+    # Rotate rotors in tandem with Rotor class
+    # --------------------------------------------------------------------
     def rotate_rotors(self) -> None:
         """Rotor rotation
 
-        Rotates the right rotor each keypress. The middle rotor will rotate if the right rotor is at its notch, but also if the middle rotor is at its notch due to the double step anomaly which is implemented here. The left rotor will also rotate if the middle rotor is at its notch.
+        Rotates the right rotor each keypress. 
+
+        The middle rotor will rotate if the right rotor is at its notch, 
+        but also if the middle rotor is at its notch due to the double 
+        step anomaly which is implemented here. 
+
+        The left rotor will also rotate if the middle rotor is at
+        its notch.
         """
-        if self.middle_rotor.get_position() == self.middle_rotor.get_notch():
+        if (
+            self.middle_rotor.get_position() 
+            == self.middle_rotor.get_notch()
+        ):
             self.left_rotor.rotate()
             self.middle_rotor.rotate() # Double stepping anomaly
-        if self.right_rotor.get_position() == self.right_rotor.get_notch():
+        if (
+            self.right_rotor.get_position() 
+            == self.right_rotor.get_notch()
+        ):
             self.middle_rotor.rotate()
         self.right_rotor.rotate()
 
+    # --------------------------------------------------------------------
+    # Validate Message
+    # --------------------------------------------------------------------
     def validate_message(self, message: str) -> str:
         """Validate the message 
         
@@ -123,10 +183,14 @@ class EnigmaMachine:
         message = message.upper().strip().replace(' ', '')
         return ''.join([char for char in message if char.isalpha()])
 
+    # --------------------------------------------------------------------
+    # Set Rotor Selection
+    # --------------------------------------------------------------------
     def set_rotors(self, rotors: str) -> None:
         """Select rotor configuration
 
-        Set the rotor config and check they are all exist, are unique and there's three selected.
+        Set the rotor config and check they are all exist, are unique and 
+        there's three selected.
 
         Args:
             rotors (list[Rotor]): The rotors selected
@@ -135,7 +199,8 @@ class EnigmaMachine:
             None
 
         Raises:
-            ValueError: If there are not 3 selected rotors; if a selected rotor doesn't exist; or if a rotor duplicate is selected.
+            ValueError: If there are not 3 selected rotors; if a selected 
+            rotor doesn't exist; or if a rotor duplicate is selected.
         """
         available_rotors: dict[str, Rotor] = {
             'I': Rotor('EKMFLGDQVZNTOWYHXUSPAIBRCJ', 'Q'),
@@ -146,14 +211,23 @@ class EnigmaMachine:
         }
 
         rotors_list: list[str] = rotors.split()
-        final_rotors: list[Rotor] = [] # Make a new list to append Rotor objects to
 
-        if len(rotors_list) != len(set(rotors_list)): # Check all rotors are unique
-            raise ValueError(f'There is a duplicate rotor selected. Please only select a rotor once.')
+        # Make a new list to append Rotor objects to
+        final_rotors: list[Rotor] = []
+
+        # Check all rotors are unique
+        if len(rotors_list) != len(set(rotors_list)):
+            raise ValueError(
+                'There is a duplicate rotor selected. '
+                'Please only select a rotor once.'
+            )
 
         for rotor in rotors_list:
-            if rotor not in available_rotors: # Validate selected rotor exists and translate to rotor object
-                raise ValueError(f'Invalid rotor: {rotor} selected. Please try again')
+            # Validate selected rotor exists and translate to rotor object
+            if rotor not in available_rotors:
+                raise ValueError(
+                    f'Invalid rotor: {rotor} selected. Please try again'
+                )
 
             final_rotors.append(available_rotors[rotor])
             
@@ -162,10 +236,14 @@ class EnigmaMachine:
         
         self.rotors = final_rotors
 
+    # --------------------------------------------------------------------
+    # Set the Reflector
+    # --------------------------------------------------------------------
     def set_reflector(self, reflector: str) -> None:
         """Set the reflector
 
-        Set the reflector unless there is no reflector selected; or the reflector doesn't exist.
+        Set the reflector unless there is no reflector selected; or the 
+        reflector doesn't exist.
 
         Args:
             reflector (str): The reflector as a string
@@ -174,7 +252,8 @@ class EnigmaMachine:
             None
 
         Raises:
-            ValueError: If the reflector string is empty or the character is invalid.
+            ValueError: If the reflector string is empty or the character 
+            is invalid.
         """
         available_reflectors: dict[str, Reflector] = {
             'A': Reflector('EJMZALYXVBWFCRQUONTSPIKHGD'),
@@ -185,17 +264,28 @@ class EnigmaMachine:
         reflector = reflector.upper()
 
         if len(reflector) != 1:
-            raise ValueError(f'Argument {reflector} must be one character.') # A character was not given, either a whitespace or a number.
+            # A character was not given, either a whitespace or a number.
+            raise ValueError(
+                f'Argument {reflector} must be one character.'
+            )
 
         if reflector not in available_reflectors: 
-            raise ValueError(f'Argument {reflector} was not found in the list of available reflectors. Choose A, B, or C') # Given reflector doesn't exist
+            # Given reflector doesn't exist
+            raise ValueError(
+                f'Argument {reflector} was not found in the list of'
+                ' available reflectors. Choose A, B, or C'
+            )
 
         self.reflector = available_reflectors[reflector]
 
+    # --------------------------------------------------------------------
+    # Set Window Setting
+    # --------------------------------------------------------------------
     def set_window_setting(self, setting: str) -> None:
         """Set the window setting
 
-        Validate the inputted window settings. Return a ValueError if invalid.
+        Validate the inputted window settings. 
+        Return a ValueError if invalid.
         
         Args:
             setting (str): The given settings for each rotor
@@ -204,25 +294,44 @@ class EnigmaMachine:
             None
 
         Raises:
-            ValueError: If there are not three settings present for each rotor; or the input did not contain alphabetical characters
+            ValueError: If there are not three settings present for each 
+            rotor; or the input did not contain alphabetical characters
         """
         setting = setting.upper().replace(' ','').strip()
         if not setting.isalpha():
-            raise ValueError(f'Argument {setting} must only contain alphabetical characters.') # Invalid character (was not found in the alphabet)
+            # Invalid character (was not found in the alphabet)
+            raise ValueError(
+                f'Argument {setting} must only contain alphabetical '
+                'characters.'
+            )
         elif len(setting) != 3:
-            raise ValueError(f'Argument {setting} must be a length of 3 characters.') # Three characters are required, one for each rotor
+            # Three characters are required, one for each rotor
+            raise ValueError(
+                f'Argument {setting} must be a length of 3 '
+                'characters.'
+            ) 
         else:
             self.window_settings = setting
 
             # Window settings
-            self.rotors[0].set_window_setting(Rotor.to_index(self.window_settings[0]) % 26)
-            self.rotors[1].set_window_setting(Rotor.to_index(self.window_settings[1]) % 26)
-            self.rotors[2].set_window_setting(Rotor.to_index(self.window_settings[2]) % 26)
+            self.rotors[0].set_window_setting(
+                Rotor.to_index(self.window_settings[0]) % 26
+            )
+            self.rotors[1].set_window_setting(
+                Rotor.to_index(self.window_settings[1]) % 26
+            )
+            self.rotors[2].set_window_setting(
+                Rotor.to_index(self.window_settings[2]) % 26
+            )
 
+    # --------------------------------------------------------------------
+    # Set Ring Setting
+    # --------------------------------------------------------------------
     def set_ring_setting(self, setting: str) -> None:
         """Set the ring setting
         
-        Validate the inputted ring settings. Return a ValueError if invalid.
+        Validate the inputted ring settings. Return a ValueError if 
+        invalid.
         
         Args:
             setting (str): The given settings for each rotor
@@ -231,7 +340,8 @@ class EnigmaMachine:
             None
 
         Raises:
-            ValueError: If there are not three settings present for each rotor; or the input did not contain alphabetical characters
+            ValueError: If there are not three settings present for each 
+            rotor; or the input did not contain alphabetical characters
         """
         setting = setting.upper().replace(' ','').strip()
         if not setting.isalpha():
@@ -241,21 +351,31 @@ class EnigmaMachine:
         else:
             self.ring_settings = setting
 
-#-------Functions-------
+# ------------------------------------------------------------------------
+# Import Message from JSON
+# ------------------------------------------------------------------------
 def import_message(file_path: str) -> dict[str, str]:
     """ Import a message from a JSON file """
     with open(f'messages/{file_path}.json', 'r') as file:
         contents: dict[str, str] = json.load(file)
     return contents
 
+# ------------------------------------------------------------------------
+# Validate Key from JSON
+# ------------------------------------------------------------------------
 def validate_key(key: str) -> None:
     """ Validate the message decryption key """
     key = key.upper().strip()
     if not key.isalpha():
-        raise ValueError(f'Argument {key} must only contain alphabetical characters.')
+        raise ValueError(
+            f'Argument {key} must only contain alphabetical characters.'
+        )
     if len(key) != 6:
         raise ValueError(f'Argument {key} must contain 6 characters.')
 
+# ------------------------------------------------------------------------
+# Main Function
+# ------------------------------------------------------------------------
 def main(json_mode: bool = False) -> None:
     """ Main function """
     if not json_mode:
@@ -279,16 +399,31 @@ def main(json_mode: bool = False) -> None:
         ring_setting: str = message_info['ring_setting']
         plugboard_swaps: str = message_info['plugboard_swaps']
 
-    enigma = EnigmaMachine(rotors, reflector, window_setting, ring_setting, plugboard_swaps)
+    enigma = EnigmaMachine(
+        rotors, 
+        reflector, 
+        window_setting, 
+        ring_setting, 
+        plugboard_swaps
+    )
 
     if json_mode:
-        enigma.set_window_setting(key[0:3]) # Window setting to first half of key
-        key_print: str = enigma.run(key[3:6]) # Run the second half of the key through Enigma
-        enigma.set_window_setting(key[3:6]) # Rotate to the raw second half of key
-        print(f'{key[0:3]}\n{key_print}') # Print the keys
+        # Window setting to first half of key
+        enigma.set_window_setting(key[0:3])
+
+        # Run the second half of the key through Enigma
+        key_print: str = enigma.run(key[3:6])
+
+        # Rotate to the raw second half of key
+        enigma.set_window_setting(key[3:6])
+
+        # Print the keys
+        print(f'{key[0:3]}\n{key_print}')
 
     print(enigma.run(message)) # Run the message through
 
-#-------Main-Routine-------
+# ------------------------------------------------------------------------
+# Main Routine
+# ------------------------------------------------------------------------
 if __name__ == '__main__':
-    main()
+    main(json_mode=False)
