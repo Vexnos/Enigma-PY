@@ -34,7 +34,7 @@ import json
 # ------------------------------------------------------------------------
 class EnigmaMachine:
     """The Enigma Machine, able to encrypt messages by passing letters 
-    through a plugboard and rotors.
+    through a plugboard, rotors and a reflector.
 
     This is the main class of this project. 
     It works by taking in the user's inputted attributes and encrypting 
@@ -93,16 +93,16 @@ class EnigmaMachine:
     # --------------------------------------------------------------------
     # Run the Enigma
     # --------------------------------------------------------------------
-    def run(self, message: str) -> str:
+    def run(self, plaintext: str) -> str:
         """Run the enigma machine.
 
-        Encrypts the message by iterating over each char in the message.
+        Encrypts the plaintext by iterating over each char in the plaintext.
         """
-        message = self.validate_message(message)
-        encrypted_message: list[str] = []
-        for char in message:
-            encrypted_message.append(self.encrypt(char))
-        result: str = ''.join(encrypted_message)
+        plaintext = self.validate_plaintext(plaintext)
+        ciphertext: list[str] = []
+        for char in plaintext:
+            ciphertext.append(self.encrypt(char))
+        result: str = ''.join(ciphertext)
 
         # Add a whitespace every 5 characters.
         return ' '.join(result[i : i + 5] for i in range(0, len(result), 5))
@@ -111,7 +111,7 @@ class EnigmaMachine:
     # Encrypt for each Char
     # --------------------------------------------------------------------
     def encrypt(self, char: str) -> str:
-        """Encrypt a char from a message
+        """Encrypt a char from plaintext
 
         Takes the char and feeds it through a series of methods like the 
         Enigma machine.
@@ -169,19 +169,19 @@ class EnigmaMachine:
         self.right_rotor.rotate()
 
     # --------------------------------------------------------------------
-    # Validate Message
+    # Validate Plaintext
     # --------------------------------------------------------------------
-    def validate_message(self, message: str) -> str:
-        """Validate the message 
+    def validate_plaintext(self, plaintext: str) -> str:
+        """Validate the plaintext 
         
         Args:
-            message (str): The message to encrypt.
+            plaintext (str): Plaintext to encrypt.
         
         Returns:
-            str: The validated message
+            str: The validated plaintext
         """
-        message = message.upper().strip().replace(' ', '')
-        return ''.join([char for char in message if char.isalpha()])
+        plaintext = plaintext.upper().strip().replace(' ', '')
+        return ''.join([char for char in plaintext if char.isalpha()])
 
     # --------------------------------------------------------------------
     # Set Rotor Selection
@@ -391,12 +391,12 @@ def main(json_mode: bool = False) -> None:
         ring_setting: str = 'AAA'
         plugboard_swaps: str = ''
 
-        message = input('Your Message: ')
+        plaintext = input('Your Message: ')
     else:
-        message_info = import_message('template')
+        message_info = import_message('example')
         validate_key(message_info['key'])
 
-        message: str = message_info['message']
+        plaintext: str = message_info['plaintext']
         key: str = message_info['key']
         rotors: str = message_info['rotors']
         reflector: str = message_info['reflector']
@@ -425,7 +425,7 @@ def main(json_mode: bool = False) -> None:
         # Print the keys
         print(f'{key[0:3]}\n{key_print}')
 
-    print(enigma.run(message)) # Run the message through
+    print(enigma.run(plaintext)) # Encrypt the plaintext
 
 # ------------------------------------------------------------------------
 # Main Routine
