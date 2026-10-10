@@ -155,17 +155,22 @@ class EnigmaMachine:
         The left rotor will also rotate if the middle rotor is at
         its notch.
         """
-        if (
+        middle_at_notch = (
             self.middle_rotor.get_position() 
             == self.middle_rotor.get_notch()
-        ):
-            self.left_rotor.rotate()
-            self.middle_rotor.rotate() # Double stepping anomaly
-        if (
+        )
+
+        right_at_notch = (
             self.right_rotor.get_position() 
             == self.right_rotor.get_notch()
-        ):
+        )
+
+        if middle_at_notch:
+            self.left_rotor.rotate()
+
+        if middle_at_notch or right_at_notch:
             self.middle_rotor.rotate()
+        
         self.right_rotor.rotate()
 
     # --------------------------------------------------------------------
