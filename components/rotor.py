@@ -12,7 +12,7 @@ project: Rotor Components of the Enigma Machine
 # Rotor Class
 # ------------------------------------------------------------------------
 class Rotor:
-    """A rotor which can and encrypt letters in the same manner as the 
+    """A rotor which can encrypt letters in the same manner as the 
     Enigma Machine
 
     This class manages the rotor portion of the Enigma Machine.
@@ -25,7 +25,7 @@ class Rotor:
     Attributes:
         wiring (str): The wiring of the rotor.
         notch (int): The turnover notch position of the rotor.
-        positing (int): The position of the rotor.
+        position (int): The position of the rotor.
         ring_setting (int): The ring seting of the rotor.
     """
     wiring: str
@@ -51,8 +51,8 @@ class Rotor:
     def rotate(self, n: int = 1) -> None:
         """Rotate the rotor 
         
-        Get the current rotor position, add the amount of times rotate and 
-        get the modulo of that from 26.
+        Get the current rotor position, add the amount of times to rotate
+        and get that modulo 26.
         This ensures the rotor can never turn higher than 26 because there 
         are only 26 characters.
         
@@ -62,7 +62,6 @@ class Rotor:
         Returns:
             None
         """
-        # Remainder of 26 to ensure the rotor loops around
         self.position = (self.position + n) % 26
 
     # --------------------------------------------------------------------
@@ -77,7 +76,6 @@ class Rotor:
     # --------------------------------------------------------------------
     def set_ring_setting(self, ring_setting: int) -> None:
         """ Set the ring position for settings ONLY """
-        # Remainder of 26 to ensure the rotor loops around
         self.ring_setting = ring_setting % 26
 
     # --------------------------------------------------------------------
