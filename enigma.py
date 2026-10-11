@@ -27,6 +27,7 @@ C: FVPJIAOYEDRZXWGCTKUQSBNMHL
 # ------------------------------------------------------------------------
 
 from components import *
+from time import strftime
 import json
 
 # ------------------------------------------------------------------------
@@ -440,11 +441,14 @@ def main(json_mode: bool = False) -> None:
         # Rotate to the raw second half of key
         enigma.set_window_setting(key[3:6])
 
-        ciphertext: str = enigma.run(plaintext)
+        creation_time = strftime('%H%M')
 
-        plaintext_info['ciphertext'] = f'{key[0:3]} {key_print} | {ciphertext}'
-        print(f'{key[0:3]} {key_print} | {ciphertext}')
-        if export := input('Export? (y/n): ').lower().startswith('y'):
+        ciphertext: str = enigma.run(plaintext)
+        ciphertext = f'{creation_time} = {len(ciphertext)} = {key[0:3]} {key_print} | {ciphertext}'
+
+        plaintext_info['ciphertext'] = ciphertext
+        print(ciphertext)
+        if input('Export? (y/n): ').lower().startswith('y'):
             export_ciphertext(plaintext_path, plaintext_info)
     else:
         print(enigma.run(plaintext))
