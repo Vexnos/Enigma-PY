@@ -439,7 +439,10 @@ def main(json_mode: bool = False) -> None:
         key_print: str = enigma.run(key[3:6])
 
         # Rotate to the raw second half of key
-        enigma.set_window_setting(key[3:6])
+        if input('Decrypt? (y/n): ').lower().startswith('y'):
+            enigma.set_window_setting(key_print)
+        else:
+            enigma.set_window_setting(key[3:6])
 
         creation_time = strftime('%H%M')
 
