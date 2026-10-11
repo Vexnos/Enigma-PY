@@ -440,8 +440,12 @@ def main(json_mode: bool = False) -> None:
         # Rotate to the raw second half of key
         enigma.set_window_setting(key[3:6])
 
-        plaintext_info['ciphertext'] = f'{key[0:3]} {key_print} | {enigma.run(plaintext)}'
-        export_ciphertext(plaintext_path, plaintext_info)
+        ciphertext: str = enigma.run(plaintext)
+
+        plaintext_info['ciphertext'] = f'{key[0:3]} {key_print} | {ciphertext}'
+        print(f'{key[0:3]} {key_print} | {ciphertext}')
+        if export := input('Export? (y/n): ').lower().startswith('y'):
+            export_ciphertext(plaintext_path, plaintext_info)
     else:
         print(enigma.run(plaintext))
 
