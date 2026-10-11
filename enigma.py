@@ -364,11 +364,20 @@ class EnigmaMachine:
 # ------------------------------------------------------------------------
 # Import Message from JSON
 # ------------------------------------------------------------------------
-def import_message(file_path: str) -> dict[str, str]:
+def import_plaintext(file_path: str) -> dict[str, str]:
     """ Import a message from a JSON file """
     with open(f'messages/{file_path}.json', 'r') as file:
         contents: dict[str, str] = json.load(file)
     return contents
+
+# ------------------------------------------------------------------------
+# Export Message to JSON
+# ------------------------------------------------------------------------
+def export_ciphertext(file_path: str, contents: dict) -> None:
+    """ Export ciphertext to json """
+    with open(f'messages/{file_path}.json', 'w') as file:
+        json.dump(contents, file, indent=4)
+        print(f'Exported to {file_path}')
 
 # ------------------------------------------------------------------------
 # Validate Key from JSON
@@ -398,16 +407,17 @@ def main(json_mode: bool = False) -> None:
 
         plaintext = input('Your Message: ')
     else:
-        message_info = import_message('example')
-        validate_key(message_info['key'])
+        plaintext_path: str = 'example'
+        plaintext_info = import_plaintext(plaintext_path)
+        validate_key(plaintext_info['key'])
 
-        plaintext: str = message_info['plaintext']
-        key: str = message_info['key']
-        rotors: str = message_info['rotors']
-        reflector: str = message_info['reflector']
-        window_setting: str = message_info['window_setting']
-        ring_setting: str = message_info['ring_setting']
-        plugboard_swaps: str = message_info['plugboard_swaps']
+        plaintext: str = plaintext_info['plaintext']
+        key: str = plaintext_info['key']
+        rotors: str = plaintext_info['rotors']
+        reflector: str = plaintext_info['reflector']
+        window_setting: str = plaintext_info['window_setting']
+        ring_setting: str = plaintext_info['ring_setting']
+        plugboard_swaps: str = plaintext_info['plugboard_swaps']
 
     enigma = EnigmaMachine(
         rotors, 
@@ -427,10 +437,10 @@ def main(json_mode: bool = False) -> None:
         # Rotate to the raw second half of key
         enigma.set_window_setting(key[3:6])
 
-        # Print the keys
-        print(f'{key[0:3]}\n{key_print}')
-
-    print(enigma.run(plaintext)) # Encrypt the plaintext
+        plaintext_info['ciphertext'] = f'{key[0:3]} {key_print} | {enigma.run(plaintext)}'
+        export_ciphertext(plaintext_path, plaintext_info)
+    else:
+        print(enigma.run(plaintext))
 
 # ------------------------------------------------------------------------
 # Main Routine
