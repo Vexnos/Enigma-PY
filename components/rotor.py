@@ -29,19 +29,19 @@ class Rotor:
         ring_setting (int): The ring seting of the rotor.
     """
     wiring: str
-    notch: int
+    notches: list[int]
     position: int
     ring_setting: int
 
     def __init__(
         self, 
         wiring: str, 
-        notch: str, 
+        notches: str, 
         position: int = 0, 
         ring_setting: int = 0
     ) -> None:
         self.wiring = wiring
-        self.notch = Rotor.to_index(notch)
+        self.notches = [Rotor.to_index(notch) for notch in notches]
         self.position = position
         self.ring_setting = ring_setting
 
@@ -134,9 +134,9 @@ class Rotor:
     # --------------------------------------------------------------------
     # Get Notch Position
     # --------------------------------------------------------------------
-    def get_notch(self) -> int:
-        """ Return the notch position """
-        return self.notch
+    def get_notches(self) -> list[int]:
+        """ Return notch positions """
+        return self.notches
 
     # --------------------------------------------------------------------
     # Index to Letter

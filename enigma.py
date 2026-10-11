@@ -155,14 +155,14 @@ class EnigmaMachine:
         The left rotor will also rotate if the middle rotor is at
         its notch.
         """
-        middle_at_notch = (
+        middle_at_notch: bool = (
             self.middle_rotor.get_position() 
-            == self.middle_rotor.get_notch()
+            in self.middle_rotor.get_notches()
         )
 
-        right_at_notch = (
+        right_at_notch: bool = (
             self.right_rotor.get_position() 
-            == self.right_rotor.get_notch()
+            in self.right_rotor.get_notches()
         )
 
         if middle_at_notch:
@@ -212,7 +212,10 @@ class EnigmaMachine:
             'II': Rotor('AJDKSIRUXBLHWTMCQGZNPYFVOE', 'E'),
             'III': Rotor('BDFHJLCPRTXVZNYEIWGAKMUSQO', 'V'),
             'IV': Rotor('ESOVPZJAYQUIRHXLNFTGKDCMWB', 'J'),
-            'V': Rotor('VZBRGITYUPSDNHLXAWMJQOFECK', 'Z')
+            'V': Rotor('VZBRGITYUPSDNHLXAWMJQOFECK', 'Z'),
+            'VI': Rotor('JPGVOUMFYQBENHZRDKASXLICTW', 'ZM'),
+            'VII': Rotor('NZJHGRCXMYSWBOUFAIVLPEKQDT', 'ZM'),
+            'VIII': Rotor('FKQHTLXOCBJSPDZRAMEWNIUYGV', 'ZM')
         }
 
         rotors_list: list[str] = rotors.split()
