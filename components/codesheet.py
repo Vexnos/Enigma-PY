@@ -1,11 +1,14 @@
 """
 
-=============================
+==========================================================================
    file: codesheet.py
 project: Codesheet Generation
  author: Vexnos
    date: 2026-10-11
-=============================
+==========================================================================
+
+Randomly generate a monthly codesheet for the enigma machine and load into
+rotating json file.
 
 """
 # ------------------------------------------------------------------------
@@ -25,6 +28,9 @@ def get_year_and_month() -> tuple[int, int]:
     today: list[str] = str(date.today()).split('-')
     return (int(today[0]), int(today[1]))
 
+def get_days_in_month(year: int, month: int) -> int:
+    return monthrange(year, month)[1]
+
 def to_letter(index: int) -> str:
     return Rotor.to_letter(index)
 
@@ -35,7 +41,7 @@ def main() -> None:
     """ Main function """
     year, month = get_year_and_month()
 
-    days_in_month = monthrange(year, month)[1]
+    days_in_month = get_days_in_month(year, month)
 
     available_rotors = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
 
