@@ -8,6 +8,9 @@ project: Plugboard Components of the Enigma Machine
 ===================================================
 
 """
+
+import string
+
 # ------------------------------------------------------------------------
 # Plugboard Class
 # ------------------------------------------------------------------------
@@ -46,10 +49,9 @@ class Plugboard:
     def swap(self, char: str) -> str:
         """Swap the char if it matches a swap pair.
 
-        Takes a char and checks it against user entered plugboard swaps. 
-        If one is found, find its position and return the swapped char.
-        If no char is found, return itself so the rest of the encryption 
-        process can continue.
+        Takes a char and passes it through a dictionary of the alphabet
+        where the keys are the alphabet and the values are the swapped
+        alphabet.
 
         Args:
             char (str): User inputted char
@@ -57,22 +59,14 @@ class Plugboard:
         Returns:
             str: Either the user inputted char or the swapped char
         """
-        # Don't waste time calculating if there are no user defined 
-        # plugboard swaps
-        if len(self.plugboard_swaps) == 0 or self.plugboard_swaps is None:
-            return char
+        alphabet = {char: char for char in string.ascii_uppercase}
 
-        # Iterate over and find the first swap pair that char is in
-        swap: str | None = next((
-            swap for swap in self.plugboard_swaps if char in swap
-        ), None)
+        for swap in self.plugboard_swaps:
+            a, b = swap[0], swap[1]
+            alphabet[a] = b
+            alphabet[b] = a
 
-        # Find its position in the pair and swap with the other position
-        if swap is not None: 
-            pos: int = swap.index(char) 
-            return swap[1] if pos == 0 else swap[0]
-        else: # A pair wasn't found, return the original char
-            return char
+        return alphabet[char]
 
     # --------------------------------------------------------------------
     # Only two characters in a swap
