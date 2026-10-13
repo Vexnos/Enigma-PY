@@ -388,15 +388,35 @@ def export_ciphertext(file_path: str, contents: dict) -> None:
 # ------------------------------------------------------------------------
 # Validate Key from JSON
 # ------------------------------------------------------------------------
-def validate_key(key: str) -> None:
-    """ Validate the message decryption key """
+def validate_key(key: str) -> str:
+    """Validate the message decryption key
+
+    Validates the key, fails if key is invalid. If a key is not specified
+    a random one will be generated.
+     
+    Args:
+        key (str): The key to validate
+    
+    Returns:
+        str: if key is valid or a random key was generated
+
+    Raises:
+        ValueError: If non-alphabetical characters are entered or key
+        length is not 6
+    """
     key = key.upper().strip()
-    if not key.isalpha():
-        raise ValueError(
-            f'Argument {key} must only contain alphabetical characters.'
-        )
-    if len(key) != 6:
+    if len(key) == 6:
+        if not key.isalpha():
+            raise ValueError(
+                f'Argument {key} must only contain alphabetical characters.'
+            )
+    elif len(key) == 0:
+        # Generate a key automatically if one is not specified
+        key_chars = [random.choice(string.ascii_uppercase) for _ in range(6)]
+        key = ''.join(key_chars)
+    else:
         raise ValueError(f'Argument {key} must contain 6 characters.')
+    return key
 
 # ------------------------------------------------------------------------
 # Set Daily Key
@@ -428,11 +448,10 @@ def main(json_mode: bool = False) -> None:
         plaintext = input('Your Message: ')
     else:
         plaintext_path: str = 'example'
-        plaintext_info = import_plaintext(plaintext_path)
-        validate_key(plaintext_info['key'])
+        plaintext_info = import_plaintext(plaintext_path)        
 
         plaintext: str = plaintext_info['plaintext']
-        key: str = plaintext_info['key']
+        key: str = validate_key(plaintext_info['key'])
         rotors: str = plaintext_info['rotors']
         reflector: str = plaintext_info['reflector']
         window_setting: str = plaintext_info['window_setting']
