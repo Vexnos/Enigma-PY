@@ -43,6 +43,7 @@ def main() -> None:
 
     json_settings = import_json()
 
+    json_settings['daily_keys'] = datum_settings['Kenngruppen']
     json_settings['rotors'] = datum_settings['Walzenlage']
     json_settings['plugboard_swaps'] = datum_settings['Stockerverbindungen']
     json_settings['ring_setting'] = datum_settings['Ringstellung'].replace(' ', '')

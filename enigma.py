@@ -28,6 +28,8 @@ C: FVPJIAOYEDRZXWGCTKUQSBNMHL
 
 from components import *
 from time import strftime
+import string
+import random
 import json
 
 # ------------------------------------------------------------------------
@@ -397,6 +399,20 @@ def validate_key(key: str) -> None:
         raise ValueError(f'Argument {key} must contain 6 characters.')
 
 # ------------------------------------------------------------------------
+# Set Daily Key
+# ------------------------------------------------------------------------
+def set_daily_key(daily_keys: str) -> str:
+    """ Select a daily key and append two random letters """
+    key: str = random.choice(daily_keys.split())
+    combo = ['#', '@', '$']
+    random.shuffle(combo)
+    combo = ''.join(combo)
+    combo = combo.replace('#', key)
+    combo = combo.replace('@', random.choice(string.ascii_uppercase))
+    combo = combo.replace('$', random.choice(string.ascii_uppercase))
+    return combo
+
+# ------------------------------------------------------------------------
 # Main Function
 # ------------------------------------------------------------------------
 def main(json_mode: bool = False) -> None:
@@ -446,8 +462,10 @@ def main(json_mode: bool = False) -> None:
 
         creation_time = strftime('%H%M')
 
+        daily_key: str = set_daily_key(plaintext_info['daily_keys'])
+
         ciphertext: str = enigma.run(plaintext)
-        ciphertext = f'{creation_time} = {len(ciphertext)} = {key[0:3]} {key_print} | {ciphertext}'
+        ciphertext = f'{daily_key} {creation_time} = {len(ciphertext)} = {key[0:3]} {key_print} | {ciphertext}'
 
         plaintext_info['ciphertext'] = ciphertext
         print(ciphertext)
