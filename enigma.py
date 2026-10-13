@@ -484,7 +484,7 @@ def main(json_mode: bool = False) -> None:
         daily_key: str = set_daily_key(plaintext_info['daily_keys'])
 
         ciphertext: str = enigma.run(plaintext)
-        ciphertext = f'{daily_key} {creation_time} = {len(ciphertext)} = {key[0:3]} {key_print} | {ciphertext}'
+        ciphertext = f'{daily_key} {creation_time} = {len(ciphertext.replace(" ", ""))} = {key[0:3]} {key_print} | {ciphertext}'
 
         plaintext_info['ciphertext'] = ciphertext
         print(ciphertext)
