@@ -11,7 +11,7 @@ project: Load Codesheet Settings
 # ------------------------------------------------------------------------
 # Libraries
 # ------------------------------------------------------------------------
-import json
+import json5
 import csv
 from datetime import date
 
@@ -28,13 +28,13 @@ def import_csv(date: list[str]) -> dict:
     return datum_row
 
 def import_json() -> dict:
-    with open('messages/rotating.json') as file:
-        contents = json.load(file)
+    with open('messages/rotating.json5') as file:
+        contents = json5.load(file)
     return contents
 
 def export_json(contents: dict, date: list[str]) -> None:
-    with open('messages/rotating.json', 'w') as file:
-        json.dump(contents, file, indent=4)
+    with open('messages/rotating.json5', 'w') as file:
+        json5.dump(contents, file, indent=4)
     print(f'Settings loaded for {"-".join(date)}')
 
 def main() -> None:
