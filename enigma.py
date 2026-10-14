@@ -366,6 +366,18 @@ class EnigmaMachine:
         else:
             self.ring_settings = setting
 
+    # --------------------------------------------------------------------
+    # Export Settings
+    # --------------------------------------------------------------------
+    def export_settings(self) -> dict:
+        return {
+            'rotors': self.rotors,
+            'reflector': self.reflector,
+            'window_setting': self.window_settings,
+            'ring_setting': self.ring_settings,
+            'plugboard_swaps': self.plugboard_swaps
+        }
+
 # ------------------------------------------------------------------------
 # Main Function
 # ------------------------------------------------------------------------

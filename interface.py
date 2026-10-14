@@ -12,10 +12,9 @@ project: Enigma Machine in Python
 
 from enigma import EnigmaMachine
 from time import strftime
-import components.load_settings
 import string
 import random
-import json
+import json5
 
 # ------------------------------------------------------------------------
 # Interface
@@ -30,7 +29,7 @@ class Interface:
     def __init__(self, plaintext_path: str) -> None:
         self.plaintext_path = plaintext_path
         self.plaintext_info = self.import_plaintext(plaintext_path)
-        self.plaintext: str = self.plaintext_info['plaintext']
+        self.plaintext: str = self.validate_plaintext()
         self.key: str = self.validate_key(self.plaintext_info['key'])
         self.daily_keys: str = self.plaintext_info['daily_keys']
         self.enigma = EnigmaMachine(
@@ -90,8 +89,8 @@ class Interface:
     # --------------------------------------------------------------------
     def import_plaintext(self, file_path: str) -> dict[str, str]:
         """ Import a message from a JSON file """
-        with open(f'messages/{file_path}.json', 'r') as file:
-            contents: dict[str, str] = json.load(file)
+        with open(f'messages/{file_path}.json5', 'r') as file:
+            contents: dict[str, str] = json5.load(file)
         return contents
 
     # --------------------------------------------------------------------
@@ -99,8 +98,8 @@ class Interface:
     # --------------------------------------------------------------------
     def export_ciphertext(self, file_path: str, contents: dict) -> None:
         """ Export ciphertext to json """
-        with open(f'messages/{file_path}.json', 'w') as file:
-            json.dump(contents, file, indent=4)
+        with open(f'messages/{file_path}.json5', 'w') as file:
+            json5.dump(contents, file, indent=4)
             print(f'Exported to {file_path}')
 
     # --------------------------------------------------------------------
@@ -150,12 +149,20 @@ class Interface:
         combo = combo.replace('$', random.choice(string.ascii_uppercase))
         return combo
 
+    # --------------------------------------------------------------------
+    # Validate Plaintext
+    # --------------------------------------------------------------------
+    def validate_plaintext(self) -> str:
+        if len(self.plaintext_info['plaintext']) > 0:
+            return self.plaintext_info['plaintext']
+        else:
+            return input('Plaintext: ')
+
 # ------------------------------------------------------------------------
 # Main Function
 # ------------------------------------------------------------------------
 def main() -> None:
     """ Main function """
-    components.load_settings.main()
     interface = Interface('rotating')
 
     if input('Decrypt? (y/N): ').lower().startswith('y'):
