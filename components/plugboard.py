@@ -79,3 +79,9 @@ class Plugboard:
                     f'Attribute {self.plugboard_swaps}'
                     ' can only contain two characters for a swap.'
                 )
+
+    # --------------------------------------------------------------------
+    # Set Plugboard Swaps
+    # --------------------------------------------------------------------
+    def set_plugboard_swaps(self, swaps: str) -> None:
+        self.plugboard_swaps = swaps.upper().split()
