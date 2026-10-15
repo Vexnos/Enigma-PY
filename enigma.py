@@ -58,8 +58,6 @@ class EnigmaMachine:
     """
     rotors: list[Rotor]
     reflector: Reflector
-    window_settings: str
-    ring_settings: str
     plugboard_swaps: Plugboard
 
     def __init__(
@@ -306,7 +304,6 @@ class EnigmaMachine:
             ) 
         else:
             setting = setting[::-1]
-            self.window_settings = setting
 
             for i, rotor in enumerate(self.rotors):
                 rotor.set_window_setting(
@@ -344,7 +341,6 @@ class EnigmaMachine:
             ) # Three characters are required, one for each rotor
         else:
             setting = setting[::-1]
-            self.ring_settings = setting
 
             for i, rotor in enumerate(self.rotors):
                 rotor.set_ring_setting(
