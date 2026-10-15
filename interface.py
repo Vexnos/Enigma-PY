@@ -66,8 +66,7 @@ class Interface:
         reflector: str = input('Reflector: ')
 
         self.plaintext = ''
-        # self.key = ''.join(key_chars)
-        self.key = 'DTBOTY'
+        self.key = ''.join(key_chars)
         self.daily_keys = datum_settings['Kenngruppen']
 
         self.enigma = EnigmaMachine(
