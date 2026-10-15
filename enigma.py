@@ -76,22 +76,6 @@ class EnigmaMachine:
         self.set_ring_setting(ring_settings)
         self.plugboard_swaps = Plugboard(plugboard_swaps)
 
-        # Individual Rotors
-        self.right_rotor: Rotor = self.rotors[2] # First rotor
-        self.middle_rotor: Rotor = self.rotors[1]
-        self.left_rotor: Rotor = self.rotors[0]
-
-        # Ring settings
-        self.rotors[0].set_ring_setting(
-            Rotor.to_index(self.ring_settings[0]) % 26
-        )
-        self.rotors[1].set_ring_setting(
-            Rotor.to_index(self.ring_settings[1]) % 26
-        )
-        self.rotors[2].set_ring_setting(
-            Rotor.to_index(self.ring_settings[2]) % 26
-        )
-
     # --------------------------------------------------------------------
     # Run the Enigma
     # --------------------------------------------------------------------
@@ -132,13 +116,11 @@ class EnigmaMachine:
         """
         self.rotate_rotors()
         char = self.plugboard_swaps.swap(char)
-        char = self.right_rotor.move(char)
-        char = self.middle_rotor.move(char)
-        char = self.left_rotor.move(char)
+        for rotor in self.rotors:
+            char = rotor.move(char)
         char = self.reflector.reflect(char)
-        char = self.left_rotor.move(char, backwards=True)
-        char = self.middle_rotor.move(char, backwards=True)
-        char = self.right_rotor.move(char, backwards=True)
+        for rotor in reversed(self.rotors):
+            char = rotor.move(char, backwards=True)
         char = self.plugboard_swaps.swap(char)
         return char
 
@@ -158,22 +140,22 @@ class EnigmaMachine:
         its notch.
         """
         middle_at_notch: bool = (
-            self.middle_rotor.get_position() 
-            in self.middle_rotor.get_notches()
+            self.rotors[1].get_position() 
+            in self.rotors[1].get_notches()
         )
 
         right_at_notch: bool = (
-            self.right_rotor.get_position() 
-            in self.right_rotor.get_notches()
+            self.rotors[0].get_position() 
+            in self.rotors[0].get_notches()
         )
 
         if middle_at_notch:
-            self.left_rotor.rotate()
+            self.rotors[2].rotate()
 
         if middle_at_notch or right_at_notch:
-            self.middle_rotor.rotate()
+            self.rotors[1].rotate()
         
-        self.right_rotor.rotate()
+        self.rotors[0].rotate()
 
     # --------------------------------------------------------------------
     # Validate Plaintext
@@ -200,7 +182,7 @@ class EnigmaMachine:
         there's three selected.
 
         Args:
-            rotors (list[Rotor]): The rotors selected
+            rotors (str): The rotors selected
 
         Returns:
             None
@@ -221,6 +203,8 @@ class EnigmaMachine:
         }
 
         rotors_list: list[str] = rotors.split()
+
+        rotors_list.reverse()
 
         # Make a new list to append Rotor objects to
         final_rotors: list[Rotor] = []
@@ -321,18 +305,13 @@ class EnigmaMachine:
                 'characters.'
             ) 
         else:
+            setting = setting[::-1]
             self.window_settings = setting
 
-            # Window settings
-            self.rotors[0].set_window_setting(
-                Rotor.to_index(self.window_settings[0]) % 26
-            )
-            self.rotors[1].set_window_setting(
-                Rotor.to_index(self.window_settings[1]) % 26
-            )
-            self.rotors[2].set_window_setting(
-                Rotor.to_index(self.window_settings[2]) % 26
-            )
+            for i, rotor in enumerate(self.rotors):
+                rotor.set_window_setting(
+                    Rotor.to_index(setting[i]) % 26
+                )
 
     # --------------------------------------------------------------------
     # Set Ring Setting
@@ -364,19 +343,19 @@ class EnigmaMachine:
                 f'Argument {setting} must be a length of 3 characters.'
             ) # Three characters are required, one for each rotor
         else:
+            setting = setting[::-1]
             self.ring_settings = setting
 
+            for i, rotor in enumerate(self.rotors):
+                rotor.set_ring_setting(
+                    Rotor.to_index(setting[i]) % 26
+                )
+
     # --------------------------------------------------------------------
-    # Export Settings
+    # Set Plugboard Swaps
     # --------------------------------------------------------------------
-    def export_settings(self) -> dict:
-        return {
-            'rotors': self.rotors,
-            'reflector': self.reflector,
-            'window_setting': self.window_settings,
-            'ring_setting': self.ring_settings,
-            'plugboard_swaps': self.plugboard_swaps
-        }
+    def set_plugboard_swaps(self, swaps: str) -> None:
+        self.plugboard_swaps.set_plugboard_swaps(swaps)
 
 # ------------------------------------------------------------------------
 # Main Function
@@ -384,11 +363,11 @@ class EnigmaMachine:
 def main() -> None:
     # Settings
     settings = {
-        'rotors': 'I II III',
+        'rotors': 'V VII IV',
         'reflector': 'B',
-        'window_setting': 'AAA',
-        'ring_setting': 'AAA',
-        'plugboard_swaps': ''
+        'window_setting': 'DTB',
+        'ring_setting': 'HOL',
+        'plugboard_swaps': 'LW PT NE QR CA UY IO MS JZ BF'
     }
 
     plaintext = input('Your Message: ')
