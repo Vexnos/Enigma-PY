@@ -66,7 +66,8 @@ class Interface:
         reflector: str = input('Reflector: ')
 
         self.plaintext = ''
-        self.key = ''.join(key_chars)
+        # self.key = ''.join(key_chars)
+        self.key = 'DTBOTY'
         self.daily_keys = datum_settings['Kenngruppen']
 
         self.enigma = EnigmaMachine(
@@ -112,11 +113,20 @@ class Interface:
     # Decrypt
     # --------------------------------------------------------------------
     def decrypt(self) -> None:
+        year: str = input('Year: ')
+        month: str = input('Month: ')
+
         ciphertext: str = input('Ciphertext: ')
 
         metadata, ciphertext = ciphertext.split(' | ')
         time, length, key = metadata.split(' = ')
         key, encrypted_key = key.split()
+
+        settings = self.find_settings(time, year, month)
+
+        self.enigma.set_rotors(settings['rotors'])
+        self.enigma.set_ring_setting(settings['ring_setting'])
+        self.enigma.set_plugboard_swaps(settings['plugboard_swaps'])
 
         self.enigma.set_window_setting(key)
         raw_key = self.enigma.run(encrypted_key)
@@ -189,6 +199,41 @@ class Interface:
         combo = combo.replace('@', random.choice(string.ascii_uppercase))
         combo = combo.replace('$', random.choice(string.ascii_uppercase))
         return combo
+
+    # --------------------------------------------------------------------
+    # Reverse find Daily Key
+    # --------------------------------------------------------------------
+    def find_daily_key(self, days: list, day_key: str) -> list:
+        for day in days:
+            keys = day[-1].split()
+            for key in keys:
+                if key in day_key:
+                    return day
+        else:
+            raise ValueError(
+                f'The key {day_key} was not found in the codesheet.'
+                ' Please try specifying another codesheet.')
+
+    def find_settings(self, time: str, year: str, month: str) -> dict:
+        day_key = time.split()[0]
+
+        if len(year) == 0 or len(month) == 0:
+            datum = str(date.today()).split('-')
+            year = datum[0]
+            month = datum[1]
+
+        with open(f'codesheets/codesheet_{month}_{year}.csv', 'r') as file:
+            contents = file.readlines()
+        contents.remove(contents[0])
+        days = [item.strip('\n').split(',') for item in contents]
+        
+        day: list = self.find_daily_key(days, day_key)
+
+        return {
+            'rotors': day[1],
+            'ring_setting': day[2].replace(' ', ''),
+            'plugboard_swaps': day[3],
+        }
 
 # ------------------------------------------------------------------------
 # Main Function
