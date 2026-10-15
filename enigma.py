@@ -383,20 +383,22 @@ class EnigmaMachine:
 # ------------------------------------------------------------------------
 def main() -> None:
     # Settings
-    rotors: str = 'I II III'
-    reflector: str = 'B'
-    window_setting: str = 'AAA'
-    ring_setting: str = 'AAA'
-    plugboard_swaps: str = ''
+    settings = {
+        'rotors': 'I II III',
+        'reflector': 'B',
+        'window_setting': 'AAA',
+        'ring_setting': 'AAA',
+        'plugboard_swaps': ''
+    }
 
     plaintext = input('Your Message: ')
 
     enigma = EnigmaMachine(
-        rotors, 
-        reflector, 
-        window_setting, 
-        ring_setting, 
-        plugboard_swaps
+        settings['rotors'], 
+        settings['reflector'], 
+        settings['window_setting'], 
+        settings['ring_setting'], 
+        settings['plugboard_swaps']
     )
 
     print(enigma.run(plaintext))
