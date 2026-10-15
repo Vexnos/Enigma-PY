@@ -63,13 +63,15 @@ class Interface:
             random.choice(string.ascii_uppercase) for _ in range(6)
         ]
 
+        reflector: str = input('Reflector: ')
+
         self.plaintext = ''
         self.key = ''.join(key_chars)
         self.daily_keys = datum_settings['Kenngruppen']
 
         self.enigma = EnigmaMachine(
             datum_settings['Walzenlage'], 
-            'B', 
+            reflector, 
             'AAA', 
             datum_settings['Ringstellung'], 
             datum_settings['Stockerverbindungen']
@@ -193,7 +195,7 @@ class Interface:
 # ------------------------------------------------------------------------
 def main() -> None:
     """ Main function """
-    interface = Interface('rotating')
+    interface = Interface()
 
     if input('Decrypt? (y/N): ').lower().startswith('y'):
         interface.decrypt()
