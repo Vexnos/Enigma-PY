@@ -19,7 +19,7 @@ from datetime import date
 # Functions
 # ------------------------------------------------------------------------
 def import_csv(date: list[str]) -> dict:
-    with open(f'codesheet_{date[1]}_{date[0]}.csv', 'r') as file:
+    with open(f'codesheets/codesheet_{date[1]}_{date[0]}.csv', 'r') as file:
         contents = csv.DictReader(file)
 
         datum_row = next(

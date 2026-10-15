@@ -61,7 +61,7 @@ def main() -> None:
 
         contents.append(f'{day},{" ".join(picked_rotors)},{" ".join(ring_setting)},{" ".join(plugboard_swaps)},{" ".join(message_keys)}')
 
-    with open(f'codesheet_{month}_{year}.csv', 'w') as file:
+    with open(f'codesheets/codesheet_{month}_{year}.csv', 'w') as file:
         file.write('\n'.join(contents))
 
 # ------------------------------------------------------------------------
