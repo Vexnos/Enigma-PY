@@ -29,7 +29,7 @@ class Interface:
     def __init__(self, plaintext_path: str) -> None:
         self.plaintext_path = plaintext_path
         self.plaintext_info = self.import_plaintext(plaintext_path)
-        self.plaintext: str = self.validate_plaintext()
+        self.plaintext: str = self.plaintext_info['plaintext']
         self.key: str = self.validate_key(self.plaintext_info['key'])
         self.daily_keys: str = self.plaintext_info['daily_keys']
         self.enigma = EnigmaMachine(
@@ -44,6 +44,9 @@ class Interface:
     # Encrypt
     # --------------------------------------------------------------------
     def encrypt(self) -> None:
+        if len(self.plaintext) == 0:
+            self.plaintext = input('Plaintext: ')
+
         # Window setting to first half of key
         self.enigma.set_window_setting(self.key[0:3])
     
@@ -148,15 +151,6 @@ class Interface:
         combo = combo.replace('@', random.choice(string.ascii_uppercase))
         combo = combo.replace('$', random.choice(string.ascii_uppercase))
         return combo
-
-    # --------------------------------------------------------------------
-    # Validate Plaintext
-    # --------------------------------------------------------------------
-    def validate_plaintext(self) -> str:
-        if len(self.plaintext_info['plaintext']) > 0:
-            return self.plaintext_info['plaintext']
-        else:
-            return input('Plaintext: ')
 
 # ------------------------------------------------------------------------
 # Main Function
