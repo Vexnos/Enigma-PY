@@ -22,6 +22,24 @@ import json5
 # Interface
 # ------------------------------------------------------------------------
 class Interface:
+    """The Interface class for the Enigma machine
+
+    This class acts as the interface for the enigma machine in enigma.py.
+    It can load json files or encrypt from an input.
+
+    If no file path is specified into plaintext_path, a message key will
+    be automatically generated.
+
+    Decryption will search through a codesheet by using the daily keys and
+    load the settings for that day to decrypt a message.
+
+    Attributes:
+        enigma (EnigmaMachine): The loaded enigma machine
+        plaintext_path (str): Path to plaintext json file
+        plaintext (str): The plaintext
+        key (str): Message key
+        daily_keys (str): Daily Keys from a codesheet
+    """
     enigma: EnigmaMachine
     plaintext_path: str
     plaintext: str
@@ -40,6 +58,7 @@ class Interface:
     # JSON Initialization
     # --------------------------------------------------------------------
     def _json_init(self) -> None:
+        """ Initialize for JSON features """
         self.plaintext: str = self.plaintext_info['plaintext']
         self.key: str = self.validate_key(self.plaintext_info['key'])
         self.daily_keys: str = self.plaintext_info['daily_keys']
@@ -56,6 +75,7 @@ class Interface:
     # Normal Initialization
     # --------------------------------------------------------------------
     def _norm_init(self) -> None:
+        """ Initialize normally (non-JSON features) """
         datum: list[str] = str(date.today()).split('-')
         datum_settings = import_csv(datum)
 
@@ -81,6 +101,8 @@ class Interface:
     # Encrypt
     # --------------------------------------------------------------------
     def encrypt(self) -> None:
+        """ Encrypt message """
+        # If no plaintext path is specified, let the user input
         if len(self.plaintext) == 0:
             self.plaintext = input('Plaintext: ')
 
@@ -90,12 +112,14 @@ class Interface:
         # Run the second half of the key through Enigma
         key_print: str = self.enigma.run(self.key[3:6])
 
+        # Window setting to second half of key
         self.enigma.set_window_setting(self.key[3:6])
 
         creation_time = strftime('%H%M')
-        
+
+        # Randomly choose a daily key
         daily_key: str = self.set_daily_key(self.daily_keys)
-    
+
         ciphertext: str = self.enigma.run(self.plaintext)
         ciphertext = f'{daily_key} {creation_time} = {len(ciphertext.replace(" ", ""))} = {self.key[0:3]} {key_print} | {ciphertext}'
     
@@ -112,21 +136,25 @@ class Interface:
     # Decrypt
     # --------------------------------------------------------------------
     def decrypt(self) -> None:
+        """ Decrypt message """
+        # Year and month for codesheet
         year: str = input('Year: ')
         month: str = input('Month: ')
 
         ciphertext: str = input('Ciphertext: ')
 
+        # Split into sections
         metadata, ciphertext = ciphertext.split(' | ')
         time, length, key = metadata.split(' = ')
         key, encrypted_key = key.split()
 
+        # Find settings of the message's day
         settings = self.find_settings(time, year, month)
-
         self.enigma.set_rotors(settings['rotors'])
         self.enigma.set_ring_setting(settings['ring_setting'])
         self.enigma.set_plugboard_swaps(settings['plugboard_swaps'])
 
+        # Find raw key and decrypt
         self.enigma.set_window_setting(key)
         raw_key = self.enigma.run(encrypted_key)
         self.enigma.set_window_setting(raw_key)
@@ -189,7 +217,14 @@ class Interface:
     # Set Daily Key
     # --------------------------------------------------------------------
     def set_daily_key(self, daily_keys: str) -> str:
-        """ Select a daily key and append two random letters """
+        """Select a daily key and append two random letters
+        
+        Args:
+            daily_keys (str): The four keys for the day
+
+        Returns:
+            str: The chosen key
+        """
         key: str = random.choice(daily_keys.split())
         combo = ['#', '@', '$']
         random.shuffle(combo)
@@ -203,6 +238,23 @@ class Interface:
     # Reverse find Daily Key
     # --------------------------------------------------------------------
     def find_daily_key(self, days: list, day_key: str) -> list:
+        """Find the daily key in the codesheet.
+
+        Tries to find the daily key in the specified codesheet.
+        If one is not found, fail.
+
+        If it succeeds, return the day's settings.
+
+        Args:
+            days (list): List of days and their information
+            day_key (str): The daily key
+
+        Returns:
+            list: The settings of the day
+
+        Raises:
+            ValueError: If no day matching the key is found.
+        """
         for day in days:
             keys = day[-1].split()
             for key in keys:
@@ -214,11 +266,24 @@ class Interface:
                 ' Please try specifying another codesheet.')
 
     def find_settings(self, time: str, year: str, month: str) -> dict:
+        """Get the settings of the daily key
+
+        Finds the enigma settings of the daily key in a specified
+        codesheet.
+
+        Args:
+            time (str): The time of the message creation
+            year (str): The year of the codesheet
+            month (str): The month of the codesheet
+
+        Returns:
+            dict: The enigma settings of that day
+        """
         day_key = time.split()[0]
 
         if len(year) == 0 or len(month) == 0:
             datum = str(date.today()).split('-')
-            year = datum[0]
+            year = datum[0] # Datum is the german word for date
             month = datum[1]
 
         with open(f'codesheets/codesheet_{month}_{year}.csv', 'r') as file:
