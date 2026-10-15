@@ -12,6 +12,8 @@ project: Enigma Machine in Python
 
 from enigma import EnigmaMachine
 from time import strftime
+from components.load_settings import import_csv
+from datetime import date
 import string
 import random
 import json5
@@ -26,12 +28,22 @@ class Interface:
     key: str
     daily_keys: str
 
-    def __init__(self, plaintext_path: str) -> None:
+    def __init__(self, plaintext_path: str = '') -> None:
         self.plaintext_path = plaintext_path
-        self.plaintext_info = self.import_plaintext(plaintext_path)
+        if len(self.plaintext_path) > 0:
+            self.plaintext_info = self.import_plaintext(plaintext_path)
+            self._json_init()
+        else:
+            self._norm_init()
+
+    # --------------------------------------------------------------------
+    # JSON Initialization
+    # --------------------------------------------------------------------
+    def _json_init(self) -> None:
         self.plaintext: str = self.plaintext_info['plaintext']
         self.key: str = self.validate_key(self.plaintext_info['key'])
         self.daily_keys: str = self.plaintext_info['daily_keys']
+
         self.enigma = EnigmaMachine(
             self.plaintext_info['rotors'], 
             self.plaintext_info['reflector'], 
@@ -39,7 +51,30 @@ class Interface:
             self.plaintext_info['ring_setting'], 
             self.plaintext_info['plugboard_swaps']
         )
- 
+
+    # --------------------------------------------------------------------
+    # Normal Initialization
+    # --------------------------------------------------------------------
+    def _norm_init(self) -> None:
+        datum: list[str] = str(date.today()).split('-')
+        datum_settings = import_csv(datum)
+
+        key_chars = [
+            random.choice(string.ascii_uppercase) for _ in range(6)
+        ]
+
+        self.plaintext = ''
+        self.key = ''.join(key_chars)
+        self.daily_keys = datum_settings['Kenngruppen']
+
+        self.enigma = EnigmaMachine(
+            datum_settings['Walzenlage'], 
+            'B', 
+            'AAA', 
+            datum_settings['Ringstellung'], 
+            datum_settings['Stockerverbindungen']
+        )
+
     # --------------------------------------------------------------------
     # Encrypt
     # --------------------------------------------------------------------
@@ -62,13 +97,14 @@ class Interface:
         ciphertext: str = self.enigma.run(self.plaintext)
         ciphertext = f'{daily_key} {creation_time} = {len(ciphertext.replace(" ", ""))} = {self.key[0:3]} {key_print} | {ciphertext}'
     
-        self.plaintext_info['ciphertext'] = ciphertext
         print(ciphertext)
-        if input('Export? (y/n): ').lower().startswith('y'):
-            self.export_ciphertext(
-                self.plaintext_path, 
-                self.plaintext_info
-            )
+        if len(self.plaintext_path) > 0:
+            self.plaintext_info['ciphertext'] = ciphertext
+            if input('Export? (y/n): ').lower().startswith('y'):
+                self.export_ciphertext(
+                    self.plaintext_path, 
+                    self.plaintext_info
+                )
 
     # --------------------------------------------------------------------
     # Decrypt
