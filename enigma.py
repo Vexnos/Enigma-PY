@@ -197,8 +197,12 @@ class EnigmaMachine:
             'V': Rotor('VZBRGITYUPSDNHLXAWMJQOFECK', 'Z'),
             'VI': Rotor('JPGVOUMFYQBENHZRDKASXLICTW', 'ZM'),
             'VII': Rotor('NZJHGRCXMYSWBOUFAIVLPEKQDT', 'ZM'),
-            'VIII': Rotor('FKQHTLXOCBJSPDZRAMEWNIUYGV', 'ZM')
+            'VIII': Rotor('FKQHTLXOCBJSPDZRAMEWNIUYGV', 'ZM'),
+            'BETA': Rotor('LEYJVCNIXWPBQMDRTAKZGFUHOS', ''),
+            'GAMMA': Rotor('FSOKANUERHMBTIYCWLQPZXVGJD', '')
         }
+
+        all_rotors = ', '.join(available_rotors)
 
         rotors_list: list[str] = rotors.split()
 
@@ -218,13 +222,14 @@ class EnigmaMachine:
             # Validate selected rotor exists and translate to rotor object
             if rotor not in available_rotors:
                 raise ValueError(
-                    f'Invalid rotor: {rotor} selected. Please try again'
+                    f'Invalid rotor: {rotor} selected. Please select '
+                    f'from {all_rotors}'
                 )
 
             final_rotors.append(available_rotors[rotor])
             
-        if len(final_rotors) != 3: # Check there are three rotors
-            raise ValueError('You must have 3 rotors specified only.')
+        if len(final_rotors) < 3 or len(final_rotors) > 4: # Check there are three rotors
+            raise ValueError('You must have 3-4 rotors specified only.')
         
         self.rotors = final_rotors
 
@@ -250,22 +255,19 @@ class EnigmaMachine:
         available_reflectors: dict[str, Reflector] = {
             'A': Reflector('EJMZALYXVBWFCRQUONTSPIKHGD'),
             'B': Reflector('YRUHQSLDPXNGOKMIEBFZCWVJAT'),
-            'C': Reflector('FVPJIAOYEDRZXWGCTKUQSBNMHL')
+            'BT': Reflector('ENKQAUYWJICOPBLMDXZVFTHRGS'),
+            'C': Reflector('FVPJIAOYEDRZXWGCTKUQSBNMHL'),
+            'CT': Reflector('RDOBJNTKVEHMLFCWZAXGYIPSUQ')
         }
 
         reflector = reflector.upper()
-
-        if len(reflector) != 1:
-            # A character was not given, either a whitespace or a number.
-            raise ValueError(
-                f'Argument {reflector} must be one character.'
-            )
+        reflectors = ', '.join(available_reflectors)
 
         if reflector not in available_reflectors: 
             # Given reflector doesn't exist
             raise ValueError(
                 f'Argument {reflector} was not found in the list of'
-                ' available reflectors. Choose A, B, or C'
+                f' available reflectors. Choose from {reflectors}'
             )
 
         self.reflector = available_reflectors[reflector]
@@ -296,12 +298,11 @@ class EnigmaMachine:
                 f'Argument {setting} must only contain alphabetical '
                 'characters.'
             )
-        elif len(setting) != 3:
+        elif len(setting) < 3 or len(setting) > 4:
             # Three characters are required, one for each rotor
             raise ValueError(
-                f'Argument {setting} must be a length of 3 '
-                'characters.'
-            ) 
+                f'Argument {setting} must be a length of 3-4 characters.'
+            )
         else:
             setting = setting[::-1]
 
@@ -335,9 +336,9 @@ class EnigmaMachine:
                 f'Argument {setting} must only contain alphabetical'
                 ' characters.'
             ) # Invalid character (was not found in the alphabet)
-        elif len(setting) != 3:
+        elif len(setting) < 3 or len(setting) > 4:
             raise ValueError(
-                f'Argument {setting} must be a length of 3 characters.'
+                f'Argument {setting} must be a length of 3-4 characters.'
             ) # Three characters are required, one for each rotor
         else:
             setting = setting[::-1]
@@ -359,11 +360,11 @@ class EnigmaMachine:
 def main() -> None:
     # Settings
     settings = {
-        'rotors': 'V VII IV',
+        'rotors': 'I II III',
         'reflector': 'B',
-        'window_setting': 'DTB',
-        'ring_setting': 'HOL',
-        'plugboard_swaps': 'LW PT NE QR CA UY IO MS JZ BF'
+        'window_setting': 'AAA',
+        'ring_setting': 'AAA',
+        'plugboard_swaps': ''
     }
 
     plaintext = input('Your Message: ')
