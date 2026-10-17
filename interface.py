@@ -106,14 +106,18 @@ class Interface:
         if len(self.plaintext) == 0:
             self.plaintext = input('Plaintext: ')
 
+        midpoint = len(self.key) // 2 # Split the key in half
+        key_start = self.key[:midpoint]
+        key_end = self.key[midpoint:]
+
         # Window setting to first half of key
-        self.enigma.set_window_setting(self.key[0:3])
+        self.enigma.set_window_setting(key_start)
     
         # Run the second half of the key through Enigma
-        key_print: str = self.enigma.run(self.key[3:6])
+        key_print: str = self.enigma.run(key_end)
 
         # Window setting to second half of key
-        self.enigma.set_window_setting(self.key[3:6])
+        self.enigma.set_window_setting(key_end)
 
         creation_time = strftime('%H%M')
 
@@ -121,7 +125,7 @@ class Interface:
         daily_key: str = self.set_daily_key(self.daily_keys)
 
         ciphertext: str = self.enigma.run(self.plaintext)
-        ciphertext = f'{daily_key} {creation_time} = {len(ciphertext.replace(" ", ""))} = {self.key[0:3]} {key_print} | {ciphertext}'
+        ciphertext = f'{daily_key} {creation_time} = {len(ciphertext.replace(" ", ""))} = {key_start} {key_print} | {ciphertext}'
     
         print(ciphertext)
         if len(self.plaintext_path) > 0:
@@ -197,10 +201,10 @@ class Interface:
 
         Raises:
             ValueError: If non-alphabetical characters are entered or key
-            length is not 6
+            length is not 6 or 8 (support for M4)
         """
         key = key.upper().strip()
-        if len(key) == 6:
+        if len(key) == 6 or len(key) == 8:
             if not key.isalpha():
                 raise ValueError(
                     f'Argument {key} must only contain alphabetical characters.'
@@ -210,7 +214,9 @@ class Interface:
             key_chars = [random.choice(string.ascii_uppercase) for _ in range(6)]
             key = ''.join(key_chars)
         else:
-            raise ValueError(f'Argument {key} must contain 6 characters.')
+            raise ValueError(
+                f'Argument {key} must contain 6 or 8 characters.'
+            )
         return key
 
     # --------------------------------------------------------------------
@@ -265,6 +271,9 @@ class Interface:
                 f'The key {day_key} was not found in the codesheet.'
                 ' Please try specifying another codesheet.')
 
+    # --------------------------------------------------------------------
+    # Get Key Settings
+    # --------------------------------------------------------------------
     def find_settings(self, time: str, year: str, month: str) -> dict:
         """Get the settings of the daily key
 

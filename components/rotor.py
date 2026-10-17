@@ -27,23 +27,27 @@ class Rotor:
         notch (int): The turnover notch position of the rotor.
         position (int): The position of the rotor.
         ring_setting (int): The ring seting of the rotor.
+        is_thin (bool): Is thin type
     """
     wiring: str
     notches: list[int]
     position: int
     ring_setting: int
+    is_thin: bool
 
     def __init__(
         self, 
         wiring: str, 
         notches: str, 
         position: int = 0, 
-        ring_setting: int = 0
+        ring_setting: int = 0,
+        is_thin: bool = False
     ) -> None:
         self.wiring = wiring
         self.notches = [Rotor.to_index(notch) for notch in notches]
         self.position = position
         self.ring_setting = ring_setting
+        self.is_thin = is_thin
 
     # --------------------------------------------------------------------
     # Individual Rotor Logic
@@ -178,6 +182,12 @@ class Rotor:
         """
         return ord(letter) - ord('A')
 
+    # --------------------------------------------------------------------
+    # Get Type
+    # --------------------------------------------------------------------
+    def get_is_thin(self) -> bool:
+        return self.is_thin
+
 # ------------------------------------------------------------------------
 # Reflector Class
 # ------------------------------------------------------------------------
@@ -187,10 +197,18 @@ class Reflector:
 
     Attributes:
         wiring (str): The wiring of the reflector.
+        is_thin (bool): Is it a thin type reflector.
     """
-    def __init__(self, wiring: str) -> None:
+    wiring: str
+    is_thin: bool
+
+    def __init__(self, wiring: str, is_thin: bool = False) -> None:
         self.wiring = wiring
+        self.is_thin = is_thin
 
     def reflect(self, letter: str) -> str:
         index: int = ord(letter) - ord('A')
         return self.wiring[index]
+
+    def get_is_thin(self) -> bool:
+        return self.is_thin

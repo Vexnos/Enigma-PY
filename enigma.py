@@ -73,6 +73,7 @@ class EnigmaMachine:
         self.set_window_setting(window_settings)
         self.set_ring_setting(ring_settings)
         self.plugboard_swaps = Plugboard(plugboard_swaps)
+        self.verify_config()
 
     # --------------------------------------------------------------------
     # Run the Enigma
@@ -198,8 +199,8 @@ class EnigmaMachine:
             'VI': Rotor('JPGVOUMFYQBENHZRDKASXLICTW', 'ZM'),
             'VII': Rotor('NZJHGRCXMYSWBOUFAIVLPEKQDT', 'ZM'),
             'VIII': Rotor('FKQHTLXOCBJSPDZRAMEWNIUYGV', 'ZM'),
-            'BETA': Rotor('LEYJVCNIXWPBQMDRTAKZGFUHOS', ''),
-            'GAMMA': Rotor('FSOKANUERHMBTIYCWLQPZXVGJD', '')
+            'BETA': Rotor('LEYJVCNIXWPBQMDRTAKZGFUHOS', '', is_thin=True),
+            'GAMMA': Rotor('FSOKANUERHMBTIYCWLQPZXVGJD', '', is_thin=True)
         }
 
         all_rotors = ', '.join(available_rotors)
@@ -255,9 +256,9 @@ class EnigmaMachine:
         available_reflectors: dict[str, Reflector] = {
             'A': Reflector('EJMZALYXVBWFCRQUONTSPIKHGD'),
             'B': Reflector('YRUHQSLDPXNGOKMIEBFZCWVJAT'),
-            'BT': Reflector('ENKQAUYWJICOPBLMDXZVFTHRGS'),
+            'BT': Reflector('ENKQAUYWJICOPBLMDXZVFTHRGS', is_thin=True),
             'C': Reflector('FVPJIAOYEDRZXWGCTKUQSBNMHL'),
-            'CT': Reflector('RDOBJNTKVEHMLFCWZAXGYIPSUQ')
+            'CT': Reflector('RDOBJNTKVEHMLFCWZAXGYIPSUQ', is_thin=True)
         }
 
         reflector = reflector.upper()
@@ -271,6 +272,39 @@ class EnigmaMachine:
             )
 
         self.reflector = available_reflectors[reflector]
+
+    # --------------------------------------------------------------------
+    # Verify Reflector is thin if there are Four Rotors
+    # --------------------------------------------------------------------
+    def verify_config(self) -> None:
+        """Verify the rotor and reflector config if four rotors are
+        selected.
+
+        Raises:
+            ValueError: If an incorrect config is selected.
+        """
+        if len(self.rotors) == 4:
+            valid: bool = (
+                self.reflector.get_is_thin() and 
+                self.rotors[3].get_is_thin()
+            )
+
+            if not valid:
+                raise ValueError(
+                    f'You have not entered a valid config for 4 rotors'
+                    '. If you want to use 4 rotors, use the thin types'
+                    ' of the fourth rotor and reflectors.'
+                )
+
+        if len(self.rotors) == 3:
+            valid: bool = (
+                not self.reflector.get_is_thin()
+            )
+
+            if not valid:
+                raise ValueError(
+                    f'You cannot select a thin reflector for 3 rotors.'
+                )
 
     # --------------------------------------------------------------------
     # Set Window Setting
