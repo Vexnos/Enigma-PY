@@ -1,4 +1,6 @@
 __pycache__/
 messages/*
-!messages/example.json
-codesheet_*
+!messages/example.json5
+codesheets/
+components/rotors.json5
+components/reflectors.json5
