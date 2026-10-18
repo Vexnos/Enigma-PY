@@ -165,8 +165,28 @@ class EnigmaMachine:
         Returns:
             str: The validated plaintext
         """
+        punctuation: dict[str, str] = {
+            '.': 'X',
+            ',': 'Y',
+            ':': 'XX',
+            '(': 'KK',
+            ')': 'KK',
+            '-': 'YY',
+            '/': 'YY',
+            '"': 'X',
+            "'": 'X',
+            '?': 'UD'
+        }
+
         plaintext = plaintext.upper().strip().replace(' ', '')
-        return ''.join([char for char in plaintext if char.isalpha()])
+        result = []
+        for char in plaintext:
+            if char.isalpha():
+                result.append(char)
+            elif char in punctuation:
+                result.append(punctuation[char])
+
+        return ''.join(result)
 
     # --------------------------------------------------------------------
     # Set Rotor Selection
