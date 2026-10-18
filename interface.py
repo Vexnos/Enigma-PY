@@ -54,7 +54,7 @@ class Interface:
             'M4': 4
         }
 
-        self.mode = modes[mode]
+        self.mode = modes[mode.upper()]
 
         self.plaintext_path = plaintext_path
         if len(self.plaintext_path) > 0:
@@ -322,7 +322,8 @@ class Interface:
 # ------------------------------------------------------------------------
 def main() -> None:
     """ Main function """
-    interface = Interface('M4')
+    mode = input('Mode: ')
+    interface = Interface(mode)
 
     if input('Decrypt? (y/N): ').lower().startswith('y'):
         interface.decrypt()
