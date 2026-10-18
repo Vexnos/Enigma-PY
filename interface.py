@@ -134,6 +134,7 @@ class Interface:
         daily_key: str = self.set_daily_key(self.daily_keys)
 
         ciphertext: str = self.enigma.run(self.plaintext)
+        ciphertext = ' '.join(ciphertext[i : i + 5] for i in range(0, len(ciphertext), 5))
         ciphertext = f'{daily_key} {creation_time} = {len(ciphertext.replace(" ", ""))} = {key_start} {key_print} | {ciphertext}'
     
         print(ciphertext)
