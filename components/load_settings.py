@@ -18,8 +18,8 @@ from datetime import date
 # ------------------------------------------------------------------------
 # Functions
 # ------------------------------------------------------------------------
-def import_csv(date: list[str]) -> dict:
-    with open(f'codesheets/codesheet_{date[1]}_{date[0]}.csv', 'r') as file:
+def import_csv(date: list[str], mode: int) -> dict:
+    with open(f'codesheets/codesheet_{date[1]}_{date[0]}_M{mode}.csv', 'r') as file:
         contents = csv.DictReader(file)
 
         datum_row = next(
@@ -39,7 +39,7 @@ def export_json(contents: dict, date: list[str]) -> None:
 
 def main() -> None:
     datum: list[str] = str(date.today()).split('-')
-    datum_settings = import_csv(datum)
+    datum_settings = import_csv(datum, 3)
 
     json_settings = import_json()
 

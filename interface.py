@@ -39,21 +39,30 @@ class Interface:
         plaintext (str): The plaintext
         key (str): Message key
         daily_keys (str): Daily Keys from a codesheet
+        mode (int): The mode of the enigma machine (m3, or m4)
     """
     enigma: EnigmaMachine
     plaintext_path: str
     plaintext: str
     key: str
     daily_keys: str
+    mode: int    
 
-    def __init__(self, plaintext_path: str = '') -> None:
+    def __init__(self, mode: str, plaintext_path: str = '') -> None:
+        modes = {
+            'M3': 3,
+            'M4': 4
+        }
+
+        self.mode = modes[mode]
+
         self.plaintext_path = plaintext_path
         if len(self.plaintext_path) > 0:
             self.plaintext_info = self.import_plaintext(plaintext_path)
             self._json_init()
         else:
             self._norm_init()
-
+            
     # --------------------------------------------------------------------
     # JSON Initialization
     # --------------------------------------------------------------------
@@ -77,10 +86,10 @@ class Interface:
     def _norm_init(self) -> None:
         """ Initialize normally (non-JSON features) """
         datum: list[str] = str(date.today()).split('-')
-        datum_settings = import_csv(datum)
+        datum_settings = import_csv(datum, self.mode)
 
         key_chars = [
-            random.choice(string.ascii_uppercase) for _ in range(6)
+            random.choice(string.ascii_uppercase) for _ in range(self.mode * 2)
         ]
 
         reflector: str = input('Reflector: ')
@@ -92,7 +101,7 @@ class Interface:
         self.enigma = EnigmaMachine(
             datum_settings['Walzenlage'], 
             reflector, 
-            'AAA', 
+            'A' * self.mode, 
             datum_settings['Ringstellung'], 
             datum_settings['Stockerverbindungen']
         )
@@ -295,7 +304,7 @@ class Interface:
             year = datum[0] # Datum is the german word for date
             month = datum[1]
 
-        with open(f'codesheets/codesheet_{month}_{year}.csv', 'r') as file:
+        with open(f'codesheets/codesheet_{month}_{year}_M{self.mode}.csv', 'r') as file:
             contents = file.readlines()
         contents.remove(contents[0])
         days = [item.strip('\n').split(',') for item in contents]
@@ -313,7 +322,7 @@ class Interface:
 # ------------------------------------------------------------------------
 def main() -> None:
     """ Main function """
-    interface = Interface()
+    interface = Interface('M4')
 
     if input('Decrypt? (y/N): ').lower().startswith('y'):
         interface.decrypt()
