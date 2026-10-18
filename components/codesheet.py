@@ -17,7 +17,7 @@ rotating json file.
 import string
 from calendar import monthrange
 from datetime import date
-from random import sample, randint, shuffle
+from random import sample, randint, shuffle, choice
 from rotor import Rotor
 
 # ------------------------------------------------------------------------
@@ -43,26 +43,45 @@ def main() -> None:
 
     days_in_month = get_days_in_month(year, month)
 
-    available_rotors = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII']
+    modes = {
+        'M3': 3,
+        'M4': 4
+    }
+    for mode in list(modes):
+        available_rotors = [
+            'I', 
+            'II', 
+            'III', 
+            'IV', 
+            'V', 
+            'VI', 
+            'VII', 
+            'VIII'
+        ]
 
-    contents = []
+        available_greek_rotors = ['BETA', 'GAMMA']
 
-    contents.append('Datum,Walzenlage,Ringstellung,Stockerverbindungen,Kenngruppen')
-    for day in range(1, days_in_month + 1):
-        picked_rotors = sample(available_rotors, 3)
+        contents = []
 
-        ring_setting = [to_letter(randint(0, 25)) for _ in range(3)]
+        contents.append('Datum,Walzenlage,Ringstellung,Stockerverbindungen,Kenngruppen')
+        for day in range(1, days_in_month + 1):
+            picked_rotors: list = sample(available_rotors, 3)
+            if mode == 'M4':
+                greek_wheel: str = choice(available_greek_rotors)
+                picked_rotors.insert(0, greek_wheel)
 
-        alphabet = [char for char in string.ascii_uppercase]
-        shuffle(alphabet)
-        plugboard_swaps = [f'{alphabet[shift + 1]}{alphabet[shift + 2]}' for shift in range(1, 20, 2)]
+            ring_setting = [to_letter(randint(0, 25)) for _ in range(modes[mode])]
 
-        message_keys = [gen_key() for _ in range(4)]
+            alphabet = [char for char in string.ascii_uppercase]
+            shuffle(alphabet)
+            plugboard_swaps = [f'{alphabet[shift + 1]}{alphabet[shift + 2]}' for shift in range(1, 20, 2)]
 
-        contents.append(f'{day},{" ".join(picked_rotors)},{" ".join(ring_setting)},{" ".join(plugboard_swaps)},{" ".join(message_keys)}')
+            message_keys = [gen_key() for _ in range(4)]
 
-    with open(f'codesheets/codesheet_{month}_{year}.csv', 'w') as file:
-        file.write('\n'.join(contents))
+            contents.append(f'{day},{" ".join(picked_rotors)},{" ".join(ring_setting)},{" ".join(plugboard_swaps)},{" ".join(message_keys)}')
+
+            with open(f'codesheets/codesheet_{month}_{year}_{mode}.csv', 'w') as file:
+                file.write('\n'.join(contents))
 
 # ------------------------------------------------------------------------
 # Main Routine
