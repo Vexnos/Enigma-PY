@@ -87,10 +87,7 @@ class EnigmaMachine:
         ciphertext: list[str] = []
         for char in plaintext:
             ciphertext.append(self.encrypt(char))
-        result: str = ''.join(ciphertext)
-
-        # Add a whitespace every 5 characters.
-        return ' '.join(result[i : i + 5] for i in range(0, len(result), 5))
+        return ''.join(ciphertext)
 
     # --------------------------------------------------------------------
     # Encrypt for each Char
@@ -199,8 +196,8 @@ class EnigmaMachine:
             'VI': Rotor('JPGVOUMFYQBENHZRDKASXLICTW', 'ZM'),
             'VII': Rotor('NZJHGRCXMYSWBOUFAIVLPEKQDT', 'ZM'),
             'VIII': Rotor('FKQHTLXOCBJSPDZRAMEWNIUYGV', 'ZM'),
-            'BETA': Rotor('LEYJVCNIXWPBQMDRTAKZGFUHOS', '', is_thin=True),
-            'GAMMA': Rotor('FSOKANUERHMBTIYCWLQPZXVGJD', '', is_thin=True)
+            'β': Rotor('LEYJVCNIXWPBQMDRTAKZGFUHOS', '', is_thin=True),
+            'γ': Rotor('FSOKANUERHMBTIYCWLQPZXVGJD', '', is_thin=True)
         }
 
         all_rotors = ', '.join(available_rotors)

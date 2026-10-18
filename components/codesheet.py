@@ -59,7 +59,7 @@ def main() -> None:
             'VIII'
         ]
 
-        available_greek_rotors = ['BETA', 'GAMMA']
+        available_greek_rotors = ['β', 'γ']
 
         contents = []
 
