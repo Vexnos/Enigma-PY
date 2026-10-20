@@ -328,7 +328,7 @@ def main() -> None:
 
     if input('Decrypt? (y/N): ').lower().startswith('y'):
         interface.decrypt()
-    else:    
+    else:
         interface.encrypt()
 
 # ------------------------------------------------------------------------
