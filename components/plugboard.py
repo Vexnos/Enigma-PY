@@ -22,14 +22,14 @@ class Plugboard:
     according to user entered swaps.
 
     Attributes:
-        plugboard_swaps (list[str]): The list of swaps.
+        plugboard_swaps (dict[str, str]): The list of swaps.
     """
-    plugboard_swaps: list[str]
+    plugboard_swaps: dict[str, str]
 
     def __init__(self, plugboard_swaps: str) -> None:
         if self.has_no_duplicates(plugboard_swaps):
-            self.plugboard_swaps = plugboard_swaps.upper().split()
-            self.only_two_chars()
+            self.only_two_chars(plugboard_swaps)
+            self.set_plugboard_swaps(plugboard_swaps)
         else:
             raise ValueError(
                 f'Attribute {plugboard_swaps} cannot contain duplicates.'
@@ -59,29 +59,28 @@ class Plugboard:
         Returns:
             str: Either the user inputted char or the swapped char
         """
-        alphabet = {char: char for char in string.ascii_uppercase}
-
-        for swap in self.plugboard_swaps:
-            a, b = swap[0], swap[1]
-            alphabet[a] = b
-            alphabet[b] = a
-
-        return alphabet[char]
+        return self.plugboard_swaps[char]
 
     # --------------------------------------------------------------------
     # Only two characters in a swap
     # --------------------------------------------------------------------
-    def only_two_chars(self) -> None:
+    def only_two_chars(self, swaps: str) -> None:
         """ Check if each plugboard swap has only two characters """
-        for swap in self.plugboard_swaps:
+        for swap in swaps.split():
             if len(swap) != 2:
                 raise ValueError(
-                    f'Attribute {self.plugboard_swaps}'
-                    ' can only contain two characters for a swap.'
+                    f'Each plugboard swap can only contain two characters'
                 )
 
     # --------------------------------------------------------------------
     # Set Plugboard Swaps
     # --------------------------------------------------------------------
     def set_plugboard_swaps(self, swaps: str) -> None:
-        self.plugboard_swaps = swaps.upper().split()
+        alphabet = {char: char for char in string.ascii_uppercase}
+        
+        for swap in swaps.upper().split():
+            a, b = swap[0], swap[1]
+            alphabet[a] = b
+            alphabet[b] = a
+
+        self.plugboard_swaps = alphabet
