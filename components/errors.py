@@ -1,15 +1,15 @@
-class RotorConfigError(Exception):
+class ConfigError(ValueError):
     def __init__(self, message: str) -> str:
         super().__init__(message)
 
-class InvalidModeError(Exception):
+class InvalidModeError(ValueError):
     def __init__(self, message: str) -> str:
         super().__init__(message)
 
-class MessageKeyError(Exception):
+class MessageKeyError(ValueError):
     def __init__(self, message: str) -> str:
         super().__init__(message)
 
-class CodesheetKeyError(Exception):
+class CodesheetKeyError(ValueError):
     def __init__(self, message: str) -> str:
         super().__init__(message)
