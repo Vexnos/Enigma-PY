@@ -11,8 +11,10 @@ project: Enigma Machine in Python
 # ------------------------------------------------------------------------
 
 from enigma import EnigmaMachine
+from enum import Enum
 from time import strftime
 from components.load_settings import import_csv
+from components.errors import *
 from datetime import date
 import string
 import random
@@ -21,6 +23,11 @@ import json5
 # ------------------------------------------------------------------------
 # Interface
 # ------------------------------------------------------------------------
+class EnigmaMode(Enum):
+    """ Enigma Mode Enum """
+    M3 = 3
+    M4 = 4
+
 class Interface:
     """The Interface class for the Enigma machine
 
@@ -39,21 +46,23 @@ class Interface:
         plaintext (str): The plaintext
         key (str): Message key
         daily_keys (str): Daily Keys from a codesheet
-        mode (int): The mode of the enigma machine (m3, or m4)
+        mode (EnigmaMode): The mode of the enigma machine (M3, or M4)
     """
     enigma: EnigmaMachine
     plaintext_path: str
     plaintext: str
     key: str
     daily_keys: str
-    mode: int    
+    mode: EnigmaMode
 
     def __init__(self, mode: str, plaintext_path: str = '') -> None:
         modes = {
-            'M3': 3,
-            'M4': 4
+            'M3': EnigmaMode.M3,
+            'M4': EnigmaMode.M4
         }
 
+        if mode not in modes:
+            raise InvalidModeError(f'{mode!r} is an invalid Enigma mode!')
         self.mode = modes[mode.upper()]
 
         self.plaintext_path = plaintext_path
@@ -86,10 +95,10 @@ class Interface:
     def _norm_init(self) -> None:
         """ Initialize normally (non-JSON features) """
         datum: list[str] = str(date.today()).split('-')
-        datum_settings = import_csv(datum, self.mode)
+        datum_settings = import_csv(datum, self.mode.value)
 
         key_chars = [
-            random.choice(string.ascii_uppercase) for _ in range(self.mode * 2)
+            random.choice(string.ascii_uppercase) for _ in range(self.mode.value * 2)
         ]
 
         reflector: str = input('Reflector: ')
@@ -101,7 +110,7 @@ class Interface:
         self.enigma = EnigmaMachine(
             datum_settings['Walzenlage'], 
             reflector, 
-            'A' * self.mode, 
+            'A' * self.mode.value, 
             datum_settings['Ringstellung'], 
             datum_settings['Stockerverbindungen']
         )
@@ -210,8 +219,8 @@ class Interface:
             str: if key is valid or a random key was generated
 
         Raises:
-            ValueError: If non-alphabetical characters are entered or key
-            length is not 6 or 8 (support for M4)
+            MessageKeyError: If non-alphabetical characters are entered or 
+            key length is not 6 or 8 (support for M4)
         """
         key = key.upper().strip()
         if len(key) == 6 or len(key) == 8:
@@ -224,8 +233,8 @@ class Interface:
             key_chars = [random.choice(string.ascii_uppercase) for _ in range(6)]
             key = ''.join(key_chars)
         else:
-            raise ValueError(
-                f'Argument {key} must contain 6 or 8 characters.'
+            raise MessageKeyError(
+                f'Argument {key!r} must contain 6 or 8 characters.'
             )
         return key
 
@@ -269,7 +278,7 @@ class Interface:
             list: The settings of the day
 
         Raises:
-            ValueError: If no day matching the key is found.
+            CodesheetKeyError: If no day matching the key is found.
         """
         for day in days:
             keys = day[-1].split()
@@ -277,7 +286,7 @@ class Interface:
                 if key in day_key:
                     return day
         else:
-            raise ValueError(
+            raise CodesheetKeyError(
                 f'The key {day_key} was not found in the codesheet.'
                 ' Please try specifying another codesheet.')
 
@@ -305,7 +314,7 @@ class Interface:
             year = datum[0] # Datum is the german word for date
             month = datum[1]
 
-        with open(f'codesheets/codesheet_{month}_{year}_M{self.mode}.csv', 'r') as file:
+        with open(f'codesheets/codesheet_{month}_{year}_M{self.mode.value}.csv', 'r') as file:
             contents = file.readlines()
         contents.remove(contents[0])
         days = [item.strip('\n').split(',') for item in contents]
