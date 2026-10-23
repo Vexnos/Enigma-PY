@@ -233,7 +233,7 @@ class Interface:
             key_chars = [random.choice(string.ascii_uppercase) for _ in range(6)]
             key = ''.join(key_chars)
         else:
-            raise MessageKeyError(
+            raise ValueError(
                 f'Argument {key!r} must contain 6 or 8 characters.'
             )
         return key
@@ -318,7 +318,7 @@ class Interface:
             contents = file.readlines()
         contents.remove(contents[0])
         days = [item.strip('\n').split(',') for item in contents]
-        
+
         day: list = self.find_daily_key(days, day_key)
 
         return {
