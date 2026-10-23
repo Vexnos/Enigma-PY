@@ -221,7 +221,7 @@ class Interface:
             str: if key is valid or a random key was generated
 
         Raises:
-            MessageKeyError: If non-alphabetical characters are entered or 
+            ValueError: If non-alphabetical characters are entered or 
             key length is not 6 or 8 (support for M4)
         """
         key = key.upper().strip()
