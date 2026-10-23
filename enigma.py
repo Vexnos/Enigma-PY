@@ -204,8 +204,9 @@ class EnigmaMachine:
             None
 
         Raises:
-            ValueError: If there are not 3 selected rotors; if a selected 
-            rotor doesn't exist; or if a rotor duplicate is selected.
+            RotorConfigError: If there are not 3 selected rotors; if a 
+            selected rotor doesn't exist; or if a rotor duplicate is 
+            selected.
         """
         available_rotors: dict[str, Rotor] = {
             'I': Rotor('EKMFLGDQVZNTOWYHXUSPAIBRCJ', 'Q'),
@@ -231,7 +232,7 @@ class EnigmaMachine:
 
         # Check all rotors are unique
         if len(rotors_list) != len(set(rotors_list)):
-            raise ValueError(
+            raise RotorConfigError(
                 'There is a duplicate rotor selected. '
                 'Please only select a rotor once.'
             )
@@ -239,7 +240,7 @@ class EnigmaMachine:
         for rotor in rotors_list:
             # Validate selected rotor exists and translate to rotor object
             if rotor not in available_rotors:
-                raise ValueError(
+                raise RotorConfigError(
                     f'Invalid rotor: {rotor} selected. Please select '
                     f'from {all_rotors}'
                 )
@@ -247,7 +248,9 @@ class EnigmaMachine:
             final_rotors.append(available_rotors[rotor])
             
         if len(final_rotors) < 3 or len(final_rotors) > 4: # Check there are three rotors
-            raise ValueError('You must have 3-4 rotors specified only.')
+            raise RotorConfigError(
+                'You must have 3-4 rotors specified only.'
+            )
         
         self.rotors = final_rotors
 
@@ -298,7 +301,7 @@ class EnigmaMachine:
         selected.
 
         Raises:
-            ValueError: If an incorrect config is selected.
+            RotorConfigError: If an incorrect config is selected.
         """
         if len(self.rotors) == 4:
             valid: bool = (
@@ -307,8 +310,8 @@ class EnigmaMachine:
             )
 
             if not valid:
-                raise ValueError(
-                    f'You have not entered a valid config for 4 rotors'
+                raise RotorConfigError(
+                    'You have not entered a valid config for 4 rotors'
                     '. If you want to use 4 rotors, use the thin types'
                     ' of the fourth rotor and reflectors.'
                 )

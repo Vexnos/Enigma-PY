@@ -11,5 +11,6 @@ project: Initialize Enigma Components
 #-------Libraries-------
 from .rotor import Rotor, Reflector
 from .plugboard import Plugboard
+from .errors import RotorConfigError
 
-__all__ = ['Rotor', 'Reflector', 'Plugboard']
+__all__ = ['Rotor', 'Reflector', 'Plugboard', 'RotorConfigError']
