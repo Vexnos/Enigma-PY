@@ -12,13 +12,13 @@ project: Enigma Machine in Python
 # Errors
 # ------------------------------------------------------------------------
 class ConfigError(ValueError):
-    def __init__(self, message: str) -> str:
+    def __init__(self, message: str) -> None:
         super().__init__(message)
 
 class InvalidModeError(ValueError):
-    def __init__(self, message: str) -> str:
+    def __init__(self, message: str) -> None:
         super().__init__(message)
 
 class CodesheetKeyError(ValueError):
-    def __init__(self, message: str) -> str:
+    def __init__(self, message: str) -> None:
         super().__init__(message)
