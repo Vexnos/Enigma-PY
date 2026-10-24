@@ -65,7 +65,7 @@ class Interface:
 
         if mode not in modes:
             raise InvalidModeError(f'{mode!r} is an invalid Enigma mode!')
-        self.mode = modes[mode.upper()]
+        self.mode = modes[mode]
 
         self.plaintext_path = plaintext_path
         if len(self.plaintext_path) > 0:
@@ -334,7 +334,7 @@ class Interface:
 # ------------------------------------------------------------------------
 def main() -> None:
     """ Main function """
-    mode = input('Mode: ')
+    mode = input('Mode: ').upper()
     interface = Interface(mode)
 
     if input('Decrypt? (y/N): ').lower().startswith('y'):
