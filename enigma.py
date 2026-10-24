@@ -30,6 +30,7 @@ C: FVPJIAOYEDRZXWGCTKUQSBNMHL
 # ------------------------------------------------------------------------
 
 from components import *
+import sys
 
 # ------------------------------------------------------------------------
 # Enigma Machine
@@ -68,12 +69,16 @@ class EnigmaMachine:
         ring_settings: str, 
         plugboard_swaps: str = ''
     ) -> None:
-        self.set_rotors(rotors)
-        self.set_reflector(reflector)
-        self.set_window_setting(window_settings)
-        self.set_ring_setting(ring_settings)
-        self.plugboard_swaps = Plugboard(plugboard_swaps)
-        self.verify_config()
+        try:
+            self.set_rotors(rotors)
+            self.set_reflector(reflector)
+            self.set_window_setting(window_settings)
+            self.set_ring_setting(ring_settings)
+            self.plugboard_swaps = Plugboard(plugboard_swaps)
+            self.verify_config()
+        except ValueError as e:
+            print(f'Application Error: {e}', file=sys.stderr)
+            sys.exit(1)
 
     # --------------------------------------------------------------------
     # Run the Enigma
@@ -299,6 +304,9 @@ class EnigmaMachine:
     def verify_config(self) -> None:
         """Verify the rotor and reflector config if four rotors are
         selected.
+
+        Returns:
+            None
 
         Raises:
             ConfigError: If an incorrect config is selected.

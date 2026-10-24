@@ -10,6 +10,7 @@ project: Plugboard Components of the Enigma Machine
 """
 
 import string
+import sys
 
 # ------------------------------------------------------------------------
 # Plugboard Class
@@ -27,21 +28,24 @@ class Plugboard:
     plugboard_swaps: dict[str, str]
 
     def __init__(self, plugboard_swaps: str) -> None:
-        if self.has_no_duplicates(plugboard_swaps):
+        try:
+            self.has_no_duplicates(plugboard_swaps)
             self.only_two_chars(plugboard_swaps)
-            self.set_plugboard_swaps(plugboard_swaps)
-        else:
-            raise ValueError(
-                f'Attribute {plugboard_swaps} cannot contain duplicates.'
-            )
+        except ValueError as e:
+            print(f'Application Error: {e}', file=sys.stderr)
+            sys.exit(1)
+        self.set_plugboard_swaps(plugboard_swaps)
 
     # --------------------------------------------------------------------
     # No Duplicate Letters
     # --------------------------------------------------------------------
-    def has_no_duplicates(self, swaps: str) -> bool:
+    def has_no_duplicates(self, swaps: str) -> None:
         """ Check there are no duplicate letters in the defined swaps """
         swaps = swaps.replace(' ', '')
-        return len(swaps) == len(set(swaps))
+        if not len(swaps) == len(set(swaps)):
+            raise ValueError(
+                f'Attribute {swaps!r} cannot contain duplicates.'
+            )
 
     # --------------------------------------------------------------------
     # Swap the letters

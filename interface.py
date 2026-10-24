@@ -21,6 +21,7 @@ from datetime import date
 import string
 import random
 import json5
+import sys
 
 # ------------------------------------------------------------------------
 # Interface
@@ -58,6 +59,34 @@ class Interface:
     mode: EnigmaMode
 
     def __init__(self, mode: str, plaintext_path: str = '') -> None:
+        try:
+            self.set_mode(mode)
+        except InvalidModeError as e:
+            print(f'Application Error: {e}', file=sys.stderr)
+            sys.exit(1)
+
+        self.plaintext_path = plaintext_path
+        if len(self.plaintext_path) > 0:
+            self.plaintext_info = self.import_plaintext(plaintext_path)
+            self._json_init()
+        else:
+            self._norm_init()
+
+    # --------------------------------------------------------------------
+    # Set Mode
+    # --------------------------------------------------------------------
+    def set_mode(self, mode: str) -> None:
+        """Set Enigma Mode 
+        
+        Args:
+            mode (str): The user entered mode
+        
+        Returns:
+            None
+
+        Raises:
+            InvalidModeError: If the entered mode is invalid.
+        """
         modes = {
             'M3': EnigmaMode.M3,
             'M4': EnigmaMode.M4
@@ -66,21 +95,20 @@ class Interface:
         if mode not in modes:
             raise InvalidModeError(f'{mode!r} is an invalid Enigma mode!')
         self.mode = modes[mode]
-
-        self.plaintext_path = plaintext_path
-        if len(self.plaintext_path) > 0:
-            self.plaintext_info = self.import_plaintext(plaintext_path)
-            self._json_init()
-        else:
-            self._norm_init()
-            
+    
     # --------------------------------------------------------------------
     # JSON Initialization
     # --------------------------------------------------------------------
     def _json_init(self) -> None:
         """ Initialize for JSON features """
         self.plaintext: str = self.plaintext_info['plaintext']
-        self.key: str = self.validate_key(self.plaintext_info['key'])
+
+        try:
+            self.key: str = self.validate_key(self.plaintext_info['key'])
+        except ValueError as e:
+            print(f'Application Error: {e}', file=sys.stderr)
+            sys.exit(1)
+
         self.daily_keys: str = self.plaintext_info['daily_keys']
 
         self.enigma = EnigmaMachine(
@@ -321,7 +349,14 @@ class Interface:
         contents.remove(contents[0])
         days = [item.strip('\n').split(',') for item in contents]
 
-        day: list = self.find_daily_key(days, day_key)
+        try:
+            day: list = self.find_daily_key(days, day_key)
+        except CodesheetKeyError as e:
+            print(
+                f'Application Error: {e}. This should not happen!',
+                file=sys.stderr
+            )
+            sys.exit(1)
 
         return {
             'rotors': day[1],
