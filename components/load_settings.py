@@ -19,13 +19,28 @@ from datetime import date
 # Functions
 # ------------------------------------------------------------------------
 def import_csv(date: list[str], mode: int) -> dict:
-    with open(f'codesheets/codesheet_{date[1]}_{date[0]}_M{mode}.csv', 'r') as file:
-        contents = csv.DictReader(file)
+    try:
+        with open(f'codesheets/codesheet_{date[1]}_{date[0]}_M{mode}.csv', 'r') as file:
+            contents = csv.DictReader(file)
 
-        datum_row = next(
-            (row for row in contents if row['Datum'] == date[2])
+            date_today = date.pop()
+            if date_today[0] == '0':
+                date_today = date_today.replace('0', '')
+
+            datum_row = next(
+                (row for row in contents if row['Datum'] == date_today),
+                None
+            )
+
+            if datum_row is None:
+                raise ValueError(
+                    f'Date {date_today} returned nothing!'
+                )
+        return datum_row
+    except FileNotFoundError:
+        raise ValueError(
+            f'Codesheet was not found. Year or Month must be invalid.'
         )
-    return datum_row
 
 def import_json() -> dict:
     with open('messages/rotating.json5') as file:

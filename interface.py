@@ -125,7 +125,11 @@ class Interface:
     def _norm_init(self) -> None:
         """ Initialize normally (non-JSON features) """
         datum: list[str] = str(date.today()).split('-')
-        datum_settings = import_csv(datum, self.mode.value)
+        try:
+            datum_settings = import_csv(datum, self.mode.value)
+        except ValueError as e:
+            print(f'Application Error: {e}', file=sys.stderr)
+            sys.exit(1)
 
         key_chars = [
             random.choice(string.ascii_uppercase) for _ in range(self.mode.value * 2)
@@ -202,7 +206,11 @@ class Interface:
         key, encrypted_key = key.split()
 
         # Find settings of the message's day
-        settings = self.find_settings(time, year, month)
+        try:
+            settings = self.find_settings(time, year, month)
+        except ValueError as e:
+            print(f'Application Error: {e}', file=sys.stderr)
+            sys.exit(1)
         self.enigma.set_rotors(settings['rotors'])
         self.enigma.set_ring_setting(settings['ring_setting'])
         self.enigma.set_plugboard_swaps(settings['plugboard_swaps'])
@@ -318,7 +326,7 @@ class Interface:
         else:
             raise CodesheetKeyError(
                 f'The key {day_key} was not found in the codesheet.'
-                ' Please try specifying another codesheet.')
+                ' Please try specifying another codesheet')
 
     # --------------------------------------------------------------------
     # Get Key Settings
@@ -344,8 +352,13 @@ class Interface:
             year = datum[0] # Datum is the german word for date
             month = datum[1]
 
-        with open(f'codesheets/codesheet_{month}_{year}_M{self.mode.value}.csv', 'r') as file:
-            contents = file.readlines()
+        try:
+            with open(f'codesheets/codesheet_{month}_{year}_M{self.mode.value}.csv', 'r') as file:
+                contents = file.readlines()
+        except FileNotFoundError:
+            raise ValueError(
+                f'No codesheet in the year: {year!r} or month: {month!r} exists.'
+            )
         contents.remove(contents[0])
         days = [item.strip('\n').split(',') for item in contents]
 
