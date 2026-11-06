@@ -201,9 +201,16 @@ class Interface:
         ciphertext: str = input('Ciphertext: ')
 
         # Split into sections
-        metadata, ciphertext = ciphertext.split(' | ')
-        time, length, key = metadata.split(' = ')
-        key, encrypted_key = key.split()
+        try:
+            metadata, ciphertext = ciphertext.split(' | ')
+            time, length, key = metadata.split(' = ')
+            key, encrypted_key = key.split()
+        except ValueError:
+            raise ValueError(
+                'Invalid message entered. '
+                'Your message should look like: \n'
+                '<daily_key> <creation_time> = <message_length> = <message_keys> | <message>'
+            )
 
         # Find settings of the message's day
         try:
@@ -357,7 +364,7 @@ class Interface:
                 contents = file.readlines()
         except FileNotFoundError:
             raise ValueError(
-                f'No codesheet in the year: {year!r} or month: {month!r} exists.'
+                f'No codesheet in the year {year!r} or month {month!r} exists.'
             )
         contents.remove(contents[0])
         days = [item.strip('\n').split(',') for item in contents]
@@ -386,7 +393,11 @@ def main() -> None:
     interface = Interface(mode)
 
     if input('Decrypt? (y/N): ').lower().startswith('y'):
-        interface.decrypt()
+        try:
+            interface.decrypt()
+        except ValueError as e:
+            print(f'Application Error: {e}', file=sys.stderr)
+            sys.exit(1)
     else:
         interface.encrypt()
 
