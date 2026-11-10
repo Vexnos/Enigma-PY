@@ -18,6 +18,7 @@ from time import strftime
 from components.load_settings import import_csv
 from components.errors import *
 from datetime import date
+import components.codesheet as codesheet
 import string
 import random
 import json5
@@ -130,6 +131,15 @@ class Interface:
         except ValueError as e:
             print(f'Application Error: {e}', file=sys.stderr)
             sys.exit(1)
+        except FileNotFoundError as e:
+            print('A codesheet for this month has not been found.')
+            if input('Generate codesheet? (y/N): ').lower().startswith('y'):
+                codesheet.main()
+                print(f'Closing to load new changes.')
+                sys.exit(0)
+            else:
+                print(f'Application Error: {e}', file=sys.stderr)
+                sys.exit(1)
 
         key_chars = [
             random.choice(string.ascii_uppercase) for _ in range(self.mode.value * 2)
