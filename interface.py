@@ -333,7 +333,8 @@ class Interface:
         else:
             raise CodesheetKeyError(
                 f'The key {day_key} was not found in the codesheet.'
-                ' Please try specifying another codesheet')
+                ' Please try specifying another codesheet.'
+            )
 
     # --------------------------------------------------------------------
     # Get Key Settings
@@ -373,7 +374,7 @@ class Interface:
             day: list = self.find_daily_key(days, day_key)
         except CodesheetKeyError as e:
             print(
-                f'Application Error: {e}. This should not happen!',
+                f'Application Error: {e}',
                 file=sys.stderr
             )
             sys.exit(1)
