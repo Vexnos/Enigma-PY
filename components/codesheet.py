@@ -18,7 +18,7 @@ import string
 from calendar import monthrange
 from datetime import date
 from random import sample, randint, shuffle, choice
-from rotor import Rotor
+from .rotor import Rotor
 
 # ------------------------------------------------------------------------
 # Functions
