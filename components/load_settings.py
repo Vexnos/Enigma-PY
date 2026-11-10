@@ -34,11 +34,11 @@ def import_csv(date: list[str], mode: int) -> dict:
 
             if datum_row is None:
                 raise ValueError(
-                    f'Date {date_today} returned nothing!'
+                    f'Date {date_today!r} returned nothing!'
                 )
         return datum_row
     except FileNotFoundError:
-        raise ValueError(
+        raise FileNotFoundError(
             f'Codesheet was not found. Year or Month must be invalid.'
         )
 
